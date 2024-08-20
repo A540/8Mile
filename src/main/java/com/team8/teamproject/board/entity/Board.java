@@ -3,10 +3,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Board {
@@ -17,9 +21,12 @@ public class Board {
 
     private String name;
     private String description;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    //연관 관계 TODO
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
 //    private User user;
@@ -30,10 +37,9 @@ public class Board {
     private Board(String name, String description) {
         this.name = name;
         this.description = description;
-        this.createdAt = LocalDateTime.now();
     }
 
-//    // 연관 관계 편의 메서드
+//    // 연관 관계 편의 메서드 TODO
 //    public linkUser(User user) {
 //        this.user = user;
 //        user.getBoards().add(this);
@@ -46,10 +52,9 @@ public class Board {
     }
 
     //게시판 수정
-    public void update(String name, String description) {
+    public void updateBoard(String name, String description) {
         this.name = name;
         this.description =description;
-        this.modifiedAt = LocalDateTime.now();
     }
 
 
