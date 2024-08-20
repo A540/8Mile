@@ -35,4 +35,15 @@ public class BoardService {
         boardRepository.deleteOne(boardId);
     }
 
+    @Transactional
+    public void updateBoard(Long boardId, String name, String description) {
+
+        //Dirty check
+        Board updateBoard = boardRepository.findOne(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
+
+        updateBoard.update(name, description);
+
+    }
+
 }

@@ -28,13 +28,10 @@ public class Board {
 //    private List<Post> posts = new ArrayList<>();
 
     private Board(String name, String description) {
-
         this.name = name;
         this.description = description;
         this.createdAt = LocalDateTime.now();
-        this.modifiedAt = LocalDateTime.now();
     }
-
 
 //    // 연관 관계 편의 메서드
 //    public linkUser(User user) {
@@ -46,6 +43,13 @@ public class Board {
     public static Board createBoard(String name, String description) {
         Board board = new Board(name, description);
         return board;
+    }
+
+    //게시판 수정
+    public void update(String name, String description) {
+        this.name = name;
+        this.description =description;
+        this.modifiedAt = LocalDateTime.now();
     }
 
 
