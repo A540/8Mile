@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,7 +35,11 @@ public class Comments {
     @Column(name="postId")
     private Long postId;
 
+    public void update(String content){
+        this.content = content;
+    }
 
-//    게시물 내 댓글 개수
+
+//    게시물 내 댓글 개수?
 //    public int size(){}
 }
