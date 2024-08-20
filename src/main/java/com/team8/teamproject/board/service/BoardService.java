@@ -32,7 +32,10 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(Long boardId) {
-        boardRepository.deleteOne(boardId);
+        Board deleteBoard = boardRepository.findOne(boardId).
+                orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
+
+        boardRepository.deleteOne(deleteBoard);
     }
 
     @Transactional

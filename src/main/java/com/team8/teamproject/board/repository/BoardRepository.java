@@ -28,10 +28,8 @@ public class BoardRepository {
                 .getResultList();
     }
 
-    public void deleteOne(Long id) {
-        em.createQuery("delete from Board b where b.id = :id", Board.class)
-                .setParameter("id", id)
-                .executeUpdate();
+    public void deleteOne(Board board) {
+        em.remove(board);
     }
 
 }

@@ -2,15 +2,15 @@ package com.team8.teamproject.board.service;
 
 import com.team8.teamproject.board.entity.Board;
 import com.team8.teamproject.board.repository.BoardRepository;
-import org.assertj.core.api.Assertions;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -18,9 +18,10 @@ public class BoardServiceTest {
 
     @Autowired
     private BoardService boardService;
-
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private EntityManager em;
 
 
     @Test
@@ -50,6 +51,21 @@ public class BoardServiceTest {
 
         //then
         assertThat(updatedBoard.getDescription()).isEqualTo("미션 임파서블777");
+    }
+
+    @Test  //부모 트랜잭션이 커밋되어야 자식 트랜잭션도 커밋
+    public void 게시판삭제() throws Exception {
+
+        //given
+        Board board = Board.createBoard("SF", "어벤져스");
+        Long savedId = boardService.saveBoard(board);
+
+        //when
+        boardService.deleteBoard(savedId);
+
+        //then
+        Optional<Board> deleteBoard = boardRepository.findOne(savedId);
+        assertThat(deleteBoard).isEmpty();
 
     }
 }
