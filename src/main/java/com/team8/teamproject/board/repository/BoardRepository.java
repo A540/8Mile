@@ -6,19 +6,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class BoardRepository {
 
-    private EntityManager em;
+    private final EntityManager em;
 
     public void save(Board board) {
         em.persist(board);
     }
 
-    public Board findOne(Long id) {
-        return em.find(Board.class, id);
+    public Optional<Board> findOne(Long id) {
+        Board board  = em.find(Board.class, id);
+        return Optional.ofNullable(board);
     }
 
     public List<Board> findAll() {
@@ -28,7 +30,8 @@ public class BoardRepository {
 
     public void deleteOne(Long id) {
         em.createQuery("delete from Board b where b.id = :id", Board.class)
-                .setParameter("id", id);
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
 }
