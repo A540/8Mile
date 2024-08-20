@@ -43,7 +43,7 @@ public class Board {
 //    }
 
     //생성 메서드
-    public static Board createBoard(String name, String description, LocalDateTime createdAt) {
+    public static Board createBoard(String name, String description) {
         Board board = new Board(name, description);
         return board;
     }
