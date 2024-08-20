@@ -36,4 +36,20 @@ public class BoardServiceTest {
         Board findBoard = boardRepository.findOne(savedId).get();
         assertThat(board).isEqualTo(findBoard);
     }
+
+    @Test
+    public void 게시판수정() throws Exception {
+
+        //given
+        Board board = Board.createBoard("액션 영화", "미션 임파서블");
+        Long savedId = boardService.saveBoard(board);
+
+        //when
+        boardService.updateBoard(savedId, "액션 영화", "미션 임파서블777");
+        Board updatedBoard = boardService.findBoard(savedId);
+
+        //then
+        assertThat(updatedBoard.getDescription()).isEqualTo("미션 임파서블777");
+
+    }
 }
