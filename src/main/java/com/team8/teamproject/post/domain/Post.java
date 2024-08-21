@@ -25,15 +25,14 @@ public class Post {
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime modifiedAt;
-
 /*  연관관계 설정
-    @ManyToOne
-    @JoinColumn(name = "boardId")
-    Board board;
-
     @OneToMany
     @JoinColumn(name = "commentId")
     Comments comment;
+
+    @ManyToOne
+    @JoinColumn(name = "boardId")
+    Board board;
 
     @ManyToOne
     @JoinColumn(name = "userId")
