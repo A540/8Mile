@@ -1,7 +1,6 @@
 package com.team8.teamproject.post.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,10 +12,10 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class) // createdAt, modifiedAt
 @Getter
 @Setter
-public class post {
+public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long id;
 
     private String title;
     private String content;
