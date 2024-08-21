@@ -2,10 +2,11 @@ package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.post.domain.post;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import com.team8.teamproject.post.service.service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class controller {
@@ -14,11 +15,6 @@ public class controller {
 
     public controller(service service){
         this.service = service;
-    }
-
-    @GetMapping("/posts")
-    public String getPost() {
-        return "post/post";
     }
 
     @GetMapping("/posts/create")
