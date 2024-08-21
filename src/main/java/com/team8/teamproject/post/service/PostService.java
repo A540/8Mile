@@ -1,18 +1,18 @@
 package com.team8.teamproject.post.service;
 
-import com.team8.teamproject.post.domain.post;
+import com.team8.teamproject.post.domain.Post;
 import lombok.RequiredArgsConstructor;
+import com.team8.teamproject.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
-import com.team8.teamproject.post.repository.postRepository;
 
 @Service
 @RequiredArgsConstructor
-public class service {
+public class PostService {
     // 데이터베이스
-    private final postRepository postRepository;
+    private final PostRepository postRepository;
 
     // Create
-    public void createPost(post post) {
+    public void createPost(Post post) {
         postRepository.save(post);
     }
 
