@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
+
+@RequiredArgsConstructor    // DI
 @RestController
 public class CommentController {
 
