@@ -1,5 +1,6 @@
 package com.team8.teamproject.post.domain;
 
+import com.team8.teamproject.board.domain.Board;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,14 +31,14 @@ public class Post {
     @JoinColumn(name = "commentId")
     Comments comment;
 
+
     @ManyToOne
     @JoinColumn(name = "boardId")
     Board board;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    User user;
-*/
+//    @ManyToOne
+//    @JoinColumn(name = "userId")
+//    user user;
 }
 
 
