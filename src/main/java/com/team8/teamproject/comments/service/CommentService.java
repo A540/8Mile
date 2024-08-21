@@ -43,5 +43,8 @@ public class CommentService {
         return target;
     }
 
-
+    // id를 갖는 comment 삭제
+    public void delete(Long id) {
+        commentRepository.deleteById(id);
+    }
 }
