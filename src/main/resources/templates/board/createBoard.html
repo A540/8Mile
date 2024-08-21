@@ -26,11 +26,12 @@
       <div class="header mb-5">
         <h1 class="text-center">게시판 추가</h1>
       </div>
-      <form th:action="@{/boards/create}" method="post">
+      <form th:action="@{/boards/create}" th:object="${boardForm}" method="post">
         <div class="mb-3">
           <label for="name">게시판 이름</label>
           <input
             type="text"
+            th:field="*{name}"
             class="form-control"
             id="name"
             name="name"
@@ -43,6 +44,7 @@
           <label for="description">게시판 설명</label>
           <textarea
             class="form-control"
+            th:field="*{description}"
             id="description"
             name="description"
             maxlength="200"
