@@ -26,16 +26,19 @@ public class Post {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
-
-    /* 외래키 설정
+/*  연관관계 설정
     @ManyToOne
     @JoinColumn(name = "boardId")
-    board board;
+    Board board;
+
+    @OneToMany
+    @JoinColumn(name = "commentId")
+    Comments comment;
 
     @ManyToOne
     @JoinColumn(name = "userId")
-    user user;
-    */
+    User user;
+*/
 }
 
 
