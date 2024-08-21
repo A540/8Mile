@@ -26,6 +26,10 @@ public class Post {
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime modifiedAt;
+/*  연관관계 설정
+    @OneToMany
+    @JoinColumn(name = "commentId")
+    Comments comment;
 
 
     @ManyToOne
