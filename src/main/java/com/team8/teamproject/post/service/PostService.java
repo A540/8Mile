@@ -7,8 +7,6 @@ import com.team8.teamproject.comments.repository.CommentRepository;
 import com.team8.teamproject.post.domain.Post;
 import lombok.RequiredArgsConstructor;
 import com.team8.teamproject.post.repository.PostRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -34,15 +32,10 @@ public class PostService {
     }
 
     // 게시글 상세 조회
-    /*
     public List<Comments> readComment(Post post) {
         List<Comments> readPost = commentRepository.findByPost(post);
-        readPost.stream()
-                .map(Comments::new)
-                .toList();
         return readPost;
     }
-    */
     
     // Create
     public void createPost(Long boardId, String title, String content) {

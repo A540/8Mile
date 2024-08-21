@@ -2,12 +2,10 @@ package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.post.domain.Post;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.team8.teamproject.post.service.PostService;
-import com.team8.teamproject.board.domain.Board;
 
 import java.util.List;
 
@@ -44,16 +42,14 @@ public class PostController {
     }
 
     // Read, 게시글 상세 조회
-    /*
     @GetMapping("/posts/{postId}")
     public String readPost(@PathVariable Long postId, Model model) {
         Post readPost = postService.readPost(postId);
         List<Comments> readComment = postService.readComment(readPost);
         model.addAttribute("post", readPost);
-        model.addAttribute("comment", readComment);
+        model.addAttribute("comments", readComment);
         return "post/post";
     }
-    */
 
     // Update
     @GetMapping("/posts/{postId}/edit")
@@ -63,14 +59,14 @@ public class PostController {
         return "post/editPost";
     }
     @PostMapping("/posts/{postId}/edit")
-    public void editPost(@PathVariable Long postId, Post post) {
+    public String editPost(@PathVariable Long postId, Post post) {
         postService.editPost(postId, post);
+        return "redirect:/posts/" + postId;
     }
 
     // Delete
-    @GetMapping("/posts/{postId}/delete")
-    public String getDeletePost(@PathVariable Long postId) {
+    @DeleteMapping("/posts/{postId}")
+    public void getDeletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
-        return "redirect:/boards";
     }
 }
