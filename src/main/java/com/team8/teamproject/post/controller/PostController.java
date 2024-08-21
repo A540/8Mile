@@ -1,18 +1,17 @@
 package com.team8.teamproject.post.controller;
 
-import com.team8.teamproject.post.domain.post;
+import com.team8.teamproject.post.domain.Post;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import com.team8.teamproject.post.service.service;
+import com.team8.teamproject.post.service.PostService;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
-public class controller {
+public class PostController {
 
-    private final service service;
+    private final PostService service;
 
-    public controller(service service){
+    public PostController(PostService service){
         this.service = service;
     }
 
@@ -33,7 +32,7 @@ public class controller {
 
     //Create
     @PostMapping("/posts/create")
-    public void createPost(post post){
+    public void createPost(Post post){
         service.createPost(post);
     }
 }
