@@ -1,4 +1,5 @@
-package com.team8.teamproject.board.entity;
+package com.team8.teamproject.board.domain;
+import com.team8.teamproject.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -29,10 +32,10 @@ public class Board {
     //연관 관계 TODO
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
-//    private User user;
+//    private Member member;
 
-//    @OneToMany(mappedBy = "board")
-//    private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "board")
+    private List<Post> posts = new ArrayList<>();
 
     private Board(String name, String description) {
         this.name = name;
@@ -40,9 +43,9 @@ public class Board {
     }
 
 //    // 연관 관계 편의 메서드 TODO
-//    public linkUser(User user) {
-//        this.user = user;
-//        user.getBoards().add(this);
+//    public linkUser(Member member) {
+//        this.member = member;
+//        member.getBoards().add(this);
 //    }
 
     //생성 메서드
