@@ -1,6 +1,6 @@
 package com.team8.teamproject.board.repository;
 
-import com.team8.teamproject.board.entity.Board;
+import com.team8.teamproject.board.domain.Board;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

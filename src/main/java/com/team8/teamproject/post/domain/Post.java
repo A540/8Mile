@@ -1,5 +1,6 @@
 package com.team8.teamproject.post.domain;
 
+import com.team8.teamproject.board.domain.Board;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,15 +28,13 @@ public class Post {
     private LocalDateTime modifiedAt;
 
 
-    /* 외래키 설정
     @ManyToOne
     @JoinColumn(name = "boardId")
-    board board;
+    Board board;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    user user;
-    */
+//    @ManyToOne
+//    @JoinColumn(name = "userId")
+//    user user;
 }
 
 

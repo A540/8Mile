@@ -1,11 +1,13 @@
 package com.team8.teamproject.board.controller;
 
-import com.team8.teamproject.board.controller.dto.BoardForm;
-import com.team8.teamproject.board.controller.dto.BoardsViewDto;
-import com.team8.teamproject.board.controller.dto.UpdateBoardForm;
-import com.team8.teamproject.board.entity.Board;
+import com.team8.teamproject.board.controller.dto.*;
+import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.service.BoardService;
+import com.team8.teamproject.post.domain.Post;
+import com.team8.teamproject.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class BoardController {
 
     private final BoardService boardService;
+    private final PostRepository postRepository;
 
     //== 게시판 목록 ==//
     @GetMapping("/boards")
@@ -35,11 +38,26 @@ public class BoardController {
         return "board/boards";
     }
 
-    //== 게시판 상세 ==//  //TODO
-//    @GetMapping("/boards/{boardId}")
-//    public String getBoard(Model model) {
-//
-//    }
+    //== 게시판 상세 ==//
+    @GetMapping("/boards/{boardId}")
+    public String getBoard(@PathVariable(value = "boardId") Long boardId, Model model, Pageable pageable) {
+
+        //게시판 정보
+        Board board = boardService.findBoard(boardId);
+        BoardViewDto boardViewDto = new BoardViewDto(board);
+
+        //게시글 정보
+        List<Post> posts = board.getPosts();
+        Page<Post> postPage = postRepository.findAll(pageable);
+        Page<PostPageDto> postPageDtos = postPage.map(PostPageDto::new);
+
+
+        model.addAttribute("board", boardViewDto);
+        model.addAttribute("postPage", postPageDtos);
+
+        return "board/board";
+
+    }
 
 
     //== 게시판 생성 ==//
