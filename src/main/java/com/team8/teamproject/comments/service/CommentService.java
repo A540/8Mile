@@ -4,6 +4,8 @@ import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.comments.dto.AddCommentRequest;
 import com.team8.teamproject.comments.mapper.CommentMapper;
 import com.team8.teamproject.comments.repository.CommentRepository;
+import com.team8.teamproject.post.domain.Post;
+import com.team8.teamproject.post.repository.PostRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,16 +17,23 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+
     private final CommentMapper commentMapper;
 
 
-    public List<Comments> findAll(Long id) {
-        return commentRepository.findByPostId(id);
+
+    public List<Comments> findAll(long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Not Found" + id));
+        return commentRepository.findByPost(post);
     }
 
     public Comments save(long id, AddCommentRequest request) {
         Comments comment = commentMapper.toEntity(request);
-        comment.setPostId(id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Not Found" + id));
+        comment.setPost(post);
         return commentRepository.save(comment);
     }
 
