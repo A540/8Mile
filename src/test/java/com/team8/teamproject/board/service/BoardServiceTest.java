@@ -1,6 +1,6 @@
 package com.team8.teamproject.board.service;
 
-import com.team8.teamproject.board.entity.Board;
+import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.repository.BoardRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
