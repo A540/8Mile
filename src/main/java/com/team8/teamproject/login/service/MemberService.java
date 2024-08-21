@@ -1,7 +1,8 @@
 package com.team8.teamproject.login.service;
 
-import com.team8.teamproject.login.domain.Member;
+import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.repository.MemberRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private EntityManager em;
 
     @Autowired
     public MemberService(MemberRepository memberRepository) {
@@ -19,6 +21,7 @@ public class MemberService {
     }
 
     public Member save(Member member) {
+        em.persist(member);
         return memberRepository.save(member);
     }
 
