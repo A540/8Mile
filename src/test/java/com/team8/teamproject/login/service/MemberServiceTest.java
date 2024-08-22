@@ -1,7 +1,6 @@
 package com.team8.teamproject.login.service;
 
-import com.team8.teamproject.login.domain.Member;
-import com.team8.teamproject.login.repository.MemberRepository;
+import com.team8.teamproject.login.entity.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,16 +19,13 @@ public class MemberServiceTest {
     @Test
     void tests() {
         // Given
-        Member member = new Member();
-        member.setName("skyepodium");
-        member.setEmail("skyepodium@example.com");
-        member.setPassword("password123");
+        Member member = new Member(123,"sdfsdf","skepodium@naver.com", "password");
 
         // When
         Member savedMember = memberService.save(member);
 
         // Then
-        Member foundMember = memberService.findById(savedMember.getId()).orElseThrow();
+        Member foundMember = memberService.findById(savedMember.getuserId()).orElseThrow();
         assertThat(foundMember.getName()).isEqualTo("skyepodium");
         assertThat(foundMember.getEmail()).isEqualTo("skyepodium@example.com");
     }
