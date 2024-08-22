@@ -30,7 +30,7 @@ public class Post {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comments> comments = new ArrayList<>();
 
     @ManyToOne
