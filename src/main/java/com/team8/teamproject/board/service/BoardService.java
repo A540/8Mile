@@ -30,13 +30,6 @@ public class BoardService {
         return boardRepository.findAll();
     }
 
-    @Transactional
-    public void deleteBoard(Long boardId) {
-        Board deleteBoard = boardRepository.findOne(boardId).
-                orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
-
-        boardRepository.deleteOne(deleteBoard);
-    }
 
     @Transactional
     public void updateBoard(Long boardId, String name, String description) {
@@ -46,7 +39,24 @@ public class BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
 
         updateBoard.updateBoard(name, description);
+    }
 
+//    @Transactional
+//    public void deleteBoard(Long boardId) {
+//        Board deleteBoard = boardRepository.findOne(boardId).
+//                orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
+//
+//        boardRepository.deleteOne(deleteBoard);
+//    }
+
+    //== 게시판 soft delete ==//
+    @Transactional
+    public void deleteBoard(Long boardId) {
+        Board deleteBoard = boardRepository.findOne(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("이미 삭제된 게시판입니다."));
+
+        //dirty check
+        deleteBoard.deleteBoard();
     }
 
 }

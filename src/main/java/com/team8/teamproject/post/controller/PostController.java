@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.team8.teamproject.post.service.PostService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -36,9 +37,11 @@ public class PostController {
         return "post/createPost";
     }
     @PostMapping("/posts/create")
-    public String createPost(@RequestParam("boardId") Long boardId, @RequestParam String title, @RequestParam String content) {
+    public String createPost(@RequestParam("boardId") Long boardId, @RequestParam String title, @RequestParam String content, RedirectAttributes redirectAttributes) {
         postService.createPost(boardId, title, content);
-        return "redirect:/boards/" + boardId;
+
+        redirectAttributes.addAttribute("boardId", boardId);
+        return "redirect:/boards/{boardId}";
     }
 
     // Read, 게시글 상세 조회

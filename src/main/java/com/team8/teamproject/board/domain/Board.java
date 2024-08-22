@@ -28,6 +28,7 @@ public class Board {
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime modifiedAt;
+    private boolean isDeleted;
 
     //연관 관계 TODO
 //    @ManyToOne
@@ -58,6 +59,11 @@ public class Board {
     public void updateBoard(String name, String description) {
         this.name = name;
         this.description =description;
+    }
+
+    //게시판 삭제 (soft delete)
+    public void deleteBoard() {
+        this.isDeleted = true;
     }
 
 
