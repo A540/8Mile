@@ -29,11 +29,9 @@ public class CommentService {
         return commentRepository.findByPost(post);
     }
 
-    public Comments save(long id, AddCommentRequest request) {
-        Comments comment = commentMapper.toEntity(request);
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Not Found" + id));
-        comment.setPost(post);
+    public Comments save(long id, String content) {
+        Post basePost = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not Found Post" + id));
+        Comments comment = new Comments(content, basePost);
         return commentRepository.save(comment);
     }
 
@@ -43,11 +41,11 @@ public class CommentService {
 //    }
 
     @Transactional      // 메소드 수행중 에러 발생 시 수행하기 이전 트랜젝션으로 복구
-    public Comments update(long id, AddCommentRequest request){
+    public Comments update(long id, String content){
         Comments target = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found" + id));
+                .orElseThrow(() -> new IllegalArgumentException("not found comment" + id));
 
-        target.update(request.getContent());
+        target.updateContent(content);
 
         return target;
     }
