@@ -28,6 +28,11 @@ public class BoardRepository {
                 .getResultList();
     }
 
+    public List<Board> findALlByIsDeletedFalse() {
+        return em.createQuery("select b from Board b where b.isDeleted = false ", Board.class)
+                .getResultList();
+    }
+
     public void deleteOne(Board board) {
         em.remove(board);
     }

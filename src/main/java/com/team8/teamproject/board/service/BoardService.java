@@ -27,7 +27,7 @@ public class BoardService {
     }
 
     public List<Board> findBoards() {
-        return boardRepository.findAll();
+        return boardRepository.findALlByIsDeletedFalse();
     }
 
 
