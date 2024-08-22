@@ -21,7 +21,6 @@ public class MemberService {
     }
 
     public Member save(Member member) {
-        em.persist(member);
         return memberRepository.save(member);
     }
 
@@ -29,9 +28,7 @@ public class MemberService {
         return memberRepository.findById(id);
     }
 
-    public Optional<Member> findByName(String name) {
-        return memberRepository.findByName(name);
-    }
+    public Optional<Member> findByEmail(String email) { return memberRepository.findByEmail(email); }
 
     public List<Member> findAll() {
         return memberRepository.findAll();
