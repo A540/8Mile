@@ -6,6 +6,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
-    Comments toEntity(AddCommentRequest addCommentRequest);
+//    Comments toEntity(AddCommentRequest addCommentRequest);
 
 }
