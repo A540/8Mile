@@ -64,8 +64,8 @@ public class BoardServiceTest {
         boardService.deleteBoard(savedId);
 
         //then
-        Optional<Board> deleteBoard = boardRepository.findOne(savedId);
-        assertThat(deleteBoard).isEmpty();
+        Board deltedBoard = boardRepository.findOne(savedId).get();
+        assertThat(deltedBoard.isDeleted()).isTrue();
 
     }
 }
