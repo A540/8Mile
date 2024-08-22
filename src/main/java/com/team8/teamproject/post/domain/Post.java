@@ -34,7 +34,7 @@ public class Post {
     private List<Comments> comments = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "boardId")
+    @JoinColumn(name = "board_Id")
     Board board;
 
 //    연관관계 설정
