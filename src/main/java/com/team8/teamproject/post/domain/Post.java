@@ -31,7 +31,7 @@ public class Post {
     private LocalDateTime modifiedAt;
 
     @OneToMany(mappedBy = "post")
-    private List<Comments> members = new ArrayList<>();
+    private List<Comments> comments = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "boardId")
