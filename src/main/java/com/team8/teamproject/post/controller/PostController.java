@@ -1,10 +1,13 @@
 package com.team8.teamproject.post.controller;
 
+import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.post.domain.Post;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.team8.teamproject.post.service.PostService;
+
+import java.util.List;
 
 @Controller
 public class PostController {
@@ -15,21 +18,36 @@ public class PostController {
         this.postService = postService;
     }
 
+    // 전체 게시글 조회
+    /*
+    @GetMapping("/board/{boardId}")
+    public String getBoardPost(@PathVariable Long boardId, Model model){
+        List<Post> readPost = postService.readByBoardId(boardId);
+        Board readBoard = postService.readBoard(boardId);
+        model.addAttribute("post", readPost);
+        model.addAttribute("board", readBoard);
+        return "board/board";
+    }
+    */
     // Create
     @GetMapping("/posts/create")
-    public String getCreatePost(){
+    public String getCreatePost(@RequestParam("boardId") Long boardId, Model model){
+        model.addAttribute("boardId", boardId);
         return "post/createPost";
     }
     @PostMapping("/posts/create")
-    public void createPost(Post post) {
-        postService.createPost(post);
+    public String createPost(@RequestParam("boardId") Long boardId, @RequestParam String title, @RequestParam String content) {
+        postService.createPost(boardId, title, content);
+        return "redirect:/boards/" + boardId;
     }
 
-    // Read boardId, CommentId 연관 관계 설정 후 진행
+    // Read, 게시글 상세 조회
     @GetMapping("/posts/{postId}")
     public String readPost(@PathVariable Long postId, Model model) {
         Post readPost = postService.readPost(postId);
+        List<Comments> readComment = postService.readComment(readPost);
         model.addAttribute("post", readPost);
+        model.addAttribute("comments", readComment);
         return "post/post";
     }
 
@@ -41,14 +59,14 @@ public class PostController {
         return "post/editPost";
     }
     @PostMapping("/posts/{postId}/edit")
-    public void editPost(@PathVariable Long postId, Post post) {
+    public String editPost(@PathVariable Long postId, Post post) {
         postService.editPost(postId, post);
+        return "redirect:/posts/" + postId;
     }
 
-    // Delete Read 완성 후 진행
-    /*
-    @GetMapping("/posts/{postId}/delete")
-    public String getDeletePost(@PathVariable Long postId) {
+    // Delete
+    @DeleteMapping("/posts/{postId}")
+    public void getDeletePost(@PathVariable Long postId) {
+        postService.deletePost(postId);
     }
-    */
 }

@@ -1,26 +1,47 @@
 package com.team8.teamproject.post.service;
 
+import com.team8.teamproject.board.domain.Board;
+import com.team8.teamproject.board.repository.BoardRepository;
+import com.team8.teamproject.comments.domain.Comments;
+import com.team8.teamproject.comments.repository.CommentRepository;
 import com.team8.teamproject.post.domain.Post;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import com.team8.teamproject.post.repository.PostRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
-    private static final Logger log = LoggerFactory.getLogger(PostService.class);
     // 데이터베이스
     private final PostRepository postRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
+    // 전체 게시글 조회
+    public List<Post> readByBoardId(Long boardId) {
+        return postRepository.findAll()
+                .stream()
+                .map(Post::new)
+                .toList();
+    }
+
+    public Board readBoard(Long boardId) {
+        Board board = boardRepository.findOne(boardId).orElseThrow(IllegalArgumentException::new);
+        return board;
+    }
+
+    // 게시글 상세 조회
+    public List<Comments> readComment(Post post) {
+        List<Comments> readPost = commentRepository.findByPost(post);
+        return readPost;
+    }
+    
     // Create
-    public void createPost(Post post) {
-        postRepository.save(post);
+    public void createPost(Long boardId, String title, String content) {
+        Board board = boardRepository.findOne(boardId).orElseThrow(IllegalArgumentException::new);
+        Post savePost = new Post(board, title, content);
+        postRepository.save(savePost);
     }
 
     // Read
@@ -39,4 +60,9 @@ public class PostService {
     }
 
     // Delete
+    public void deletePost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+
+        postRepository.delete(post);
+    }
 }
