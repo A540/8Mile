@@ -1,6 +1,6 @@
 package com.team8.teamproject.login.repository;
 
-import com.team8.teamproject.login.domain.Member;
+import com.team8.teamproject.login.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
