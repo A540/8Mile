@@ -40,7 +40,12 @@ public class Comments {
     @JoinColumn(name = "postId")
     private Post post;
 
-    public void update(String content){
+    public Comments(String content, Post post){
+        this.content = content;
+        this.post = post;
+    }
+
+    public void updateContent(String content){
         this.content = content;
     }
 
