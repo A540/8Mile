@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@EnableWebMvc
+@EnableWebMvc	//빈설정초기화 ->WebMvcConfig로 수동설정
 @SpringBootApplication
 @EnableJpaAuditing
 public class TeamprojectApplication {
@@ -15,3 +15,4 @@ public class TeamprojectApplication {
 	}
 
 }
+
