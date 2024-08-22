@@ -2,10 +2,12 @@ package com.team8.teamproject.board.controller;
 
 import com.team8.teamproject.board.controller.dto.*;
 import com.team8.teamproject.board.domain.Board;
+import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.service.BoardService;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class BoardController {
@@ -67,8 +70,15 @@ public class BoardController {
 
     @PostMapping("/boards/create")
     public String createBoard(@ModelAttribute BoardForm boardForm) {
-        Board newBoard = Board.createBoard(boardForm.getName(), boardForm.getDescription());
-        boardService.saveBoard(newBoard);
+
+        //중복 게시판 검증
+
+        try {
+            Board newBoard = Board.createBoard(boardForm.getName(), boardForm.getDescription());
+            boardService.saveBoard(newBoard);
+        } catch (BoardNameDuplicateException e) {
+            throw e;
+        }
 
         return "redirect:/boards";
     }
@@ -95,6 +105,5 @@ public class BoardController {
 
         return "board/boards";
     }
-
 
 }
