@@ -31,12 +31,12 @@ public class PostController {
     */
     // Create
     @GetMapping("/posts/create")
-    public String getCreatePost(@RequestParam("boardId") Long boardId, Model model){
+    public String getCreatePost(@RequestParam(value = "boardId") Long boardId, Model model){
         model.addAttribute("boardId", boardId);
         return "post/createPost";
     }
     @PostMapping("/posts/create")
-    public String createPost(@RequestParam("boardId") Long boardId, @RequestParam String title, @RequestParam String content) {
+    public String createPost(@RequestParam(value = "boardId") Long boardId, @RequestParam(value = "title") String title, @RequestParam(value = "content") String content) {
         postService.createPost(boardId, title, content);
         return "redirect:/boards/" + boardId;
     }
