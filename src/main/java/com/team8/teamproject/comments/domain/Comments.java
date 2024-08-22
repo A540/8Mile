@@ -1,5 +1,6 @@
 package com.team8.teamproject.comments.domain;
 
+import com.team8.teamproject.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -32,8 +33,12 @@ public class Comments {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
-    @Column(name="postId")
-    private Long postId;
+//    @Column(name="postId")
+//    private Long postId;
+
+    @ManyToOne
+    @JoinColumn(name = "postId")
+    private Post post;
 
     public void update(String content){
         this.content = content;

@@ -1,5 +1,7 @@
 package com.team8.teamproject.post.domain;
 
+import com.team8.teamproject.board.domain.Board;
+import com.team8.teamproject.comments.domain.Comments;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +9,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class) // createdAt, modifiedAt
@@ -26,16 +30,33 @@ public class Post {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    @OneToMany(mappedBy = "post")
+    private List<Comments> comments = new ArrayList<>();
 
-    /* 외래키 설정
     @ManyToOne
     @JoinColumn(name = "boardId")
-    board board;
+    Board board;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    user user;
-    */
+//    연관관계 설정
+//    @ManyToOne
+//    @JoinColumn(name = "userId")
+//    user user;
+
+    public Post(){
+
+    }
+    // BoardId를 포함하는 생성자
+    public Post(Board board, String title, String content){
+        this.board = board;
+        this.title = title;
+        this.content = content;
+    }
+
+    public Post(Post post) {
+        this.id = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+    }
 }
 
 
