@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Select the signup form
     const signupForm = document.getElementById('signupForm');
 
+    // Retrieve CSRF token from meta tags
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
     // Add event listener for form submission
     signupForm.addEventListener('submit', async (event) => {
         // Prevent the form from submitting normally
@@ -9,8 +13,28 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         // Validate form and check if email exists in the database
         if (await validateForm()) {
-            signupForm.submit();
-            alert('성공적으로 회원가입되었습니다.');
+            // Here we use fetch to submit the form data
+            const formData = new FormData(signupForm);
+            try {
+                const response = await fetch(signupForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        [csrfHeader]: csrfToken // Add CSRF token to request headers
+                    },
+                    body: new URLSearchParams(formData)
+                });
+
+                if (response.ok) {
+                    alert('성공적으로 회원가입되었습니다.');
+                    window.location.href = '/login'; // Redirect to login page or another page
+                } else {
+                    alert('회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('회원가입 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.');
+            }
         }
     });
 
@@ -64,11 +88,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Function to check if the email exists in the database
     async function checkEmailExists(email) {
         try {
-            // Send a request to the server to check if the email exists
             const response = await fetch('/check-email', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken // Add CSRF token to request headers
                 },
                 body: JSON.stringify({ email: email })
             });
