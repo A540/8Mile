@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
-@RestControllerAdvice
+//@RestControllerAdvice
 public class BoardExceptionHandler {
 
-    //TODO 예외처리 화면에 던지기(API)
-
-    @ExceptionHandler(BoardNameDuplicateException.class)
-    public ResponseEntity<ErrorResponse> BoardDuplicateExceptionHandler(BoardNameDuplicateException e) {
-        log.error("[BoardNameDuplicateException] ex", e);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> BoardDuplicateExceptionHandler(IllegalArgumentException e) {
+        log.error("[IllegalArgumentException] ex", e);
         ErrorResponse response = new ErrorResponse("BAD", e.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
