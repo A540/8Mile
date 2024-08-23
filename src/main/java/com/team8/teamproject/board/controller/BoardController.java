@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public class BoardController {
 
     private final BoardService boardService;
-    private final PostRepository postRepository;
 
     //== 게시판 목록 ==//
     @GetMapping("/boards")
@@ -46,24 +45,22 @@ public class BoardController {
 
     //== 게시판 상세 ==//
     @GetMapping("/boards/{boardId}")
-    public String getBoard(@PathVariable(value = "boardId") Long boardId, Model model, Pageable pageable) {
+    public String getBoard(@PathVariable(value = "boardId") Long boardId,
+                           @RequestParam(value = "keyword", required = false) String keyword, Model model, Pageable pageable) {
 
         //게시판 정보
         Board board = boardService.findBoard(boardId);
         BoardViewDto boardViewDto = new BoardViewDto(board);
 
-        //게시글 정보
-        List<Post> posts = board.getPosts();
-        Page<Post> postPage = postRepository.findAll(pageable);
+        //게시글 정보 (keyword 검색)
+        Page<Post> postPage = boardService.findPostsByBoardId(boardId, keyword, pageable);
         Page<PostPageDto> postPageDtos = postPage.map(PostPageDto::new);
-
 
         model.addAttribute("board", boardViewDto);
         model.addAttribute("postPage", postPageDtos);
 
         return "board/board";
     }
-
 
     //== 게시판 생성 ==//
     @GetMapping("/boards/create")
