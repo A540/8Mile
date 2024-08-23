@@ -61,14 +61,6 @@ public class BoardService {
         updateBoard.updateBoard(name, description);
     }
 
-//    @Transactional
-//    public void deleteBoard(Long boardId) {
-//        Board deleteBoard = boardRepository.findOne(boardId).
-//                orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
-//
-//        boardRepository.deleteOne(deleteBoard);
-//    }
-
     //== 게시판 soft delete ==//
     @Transactional
     public void deleteBoard(Long boardId) {
