@@ -2,18 +2,17 @@ package com.team8.teamproject.board.controller;
 
 import com.team8.teamproject.board.controller.dto.*;
 import com.team8.teamproject.board.domain.Board;
-import com.team8.teamproject.board.exception.BoardExceptionHandler;
 import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.service.BoardService;
+import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
-import com.team8.teamproject.post.repository.PostRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,9 +31,23 @@ public class BoardController {
 
     //== 게시판 목록 ==//
     @GetMapping("/boards")
-    public String getBoards(Model model) {
-        List<Board> boards = boardService.findBoards();
+    public String getBoards(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
+        //session 정보 가져오기
+        HttpSession session = request.getSession(false);
+
+        MemberViewDto memberViewDto = null;
+        if (session != null && session.getAttribute("loggedInUser") != null) {
+            Member loggedInUser = (Member) session.getAttribute("loggedInUser");
+            memberViewDto = new MemberViewDto(loggedInUser);
+        } else {
+            log.info("비회원 호출");
+        }
+        model.addAttribute("member", memberViewDto);
+
+
+        //게시판 정보
+        List<Board> boards = boardService.findBoards();
         List<BoardsViewDto> boardsViewDtoList = boards.stream()
                 .map(BoardsViewDto::new)
                 .collect(Collectors.toList());
