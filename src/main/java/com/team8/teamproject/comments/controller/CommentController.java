@@ -7,8 +7,6 @@ import com.team8.teamproject.login.entity.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +20,12 @@ public class CommentController {
     // 댓글 생성
     @PostMapping("/comments")
     public String saveComments(@RequestParam("postId") Long id, @RequestParam("content") String content, HttpSession session){
-
+        //세션에 저장한 loggedInUser 값을 사용해 Member 객체 가져오기
         Member member = (Member) session.getAttribute("loggedInUser");
+        // 로그인을 하지 않았다면 로그인 페이지로 전환
+        if(member == null){
+            return "redirect:/";
+        }
 
         Comments comment = commentService.save(id, content, member);
 
