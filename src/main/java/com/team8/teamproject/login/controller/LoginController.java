@@ -71,8 +71,7 @@ public class LoginController {
         }
     }
 
-
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logoutUser(HttpSession session) {
         // 로그아웃 시 세션을 무효화합니다.
         session.invalidate();
