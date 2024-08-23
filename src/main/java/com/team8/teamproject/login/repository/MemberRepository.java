@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Optional<Member> findByName(String name);
+    Optional<Member> findByEmail(String email);
 
-    // 모든 멤버를 리스트로 반환하는 메소드
     List<Member> findAll();
 }

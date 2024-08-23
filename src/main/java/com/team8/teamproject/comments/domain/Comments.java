@@ -1,5 +1,6 @@
 package com.team8.teamproject.comments.domain;
 
+import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,14 +34,21 @@ public class Comments {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
-//    @Column(name="postId")
-//    private Long postId;
-
     @ManyToOne
     @JoinColumn(name = "postId")
     private Post post;
 
-    public void update(String content){
+    @ManyToOne
+    @JoinColumn(name = "memberId")
+    private Member member;
+
+    public Comments(String content, Post post, Member member){
+        this.content = content;
+        this.post = post;
+        this.member = member;
+    }
+
+    public void updateContent(String content){
         this.content = content;
     }
 
