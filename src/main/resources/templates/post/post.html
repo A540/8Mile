@@ -72,7 +72,7 @@
             <div class="card-body position-relative">
               <p class="text-info mb-2" th:text="${comment.member.userName}">유저 이름</p>
               <p class="mb-2" th:text="${comment.content}">댓글 내용</p>
-              <small class="text-secondary">2024-01-04T13:21:21</small>
+              <small class="text-secondary" th:text="${#temporals.format(comment.createdAt, 'yyyy/MM/dd HH:mm')}">createdAt</small>
 
               <div
                 class="position-absolute end-0 top-50 translate-middle-y mb-3 me-3 btn-group bg-white bg-opacity-75"

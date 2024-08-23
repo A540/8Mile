@@ -30,6 +30,9 @@ public class CommentService {
     }
 
     public Comments save(long id, String content, Member member) {
+
+
+
         Post basePost = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not Found Post" + id));
         Comments comment = new Comments(content, basePost, member);
         return commentRepository.save(comment);
