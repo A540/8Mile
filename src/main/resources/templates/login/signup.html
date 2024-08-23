@@ -6,6 +6,8 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
+    <meta name="_csrf" content="${_csrf.token}" />
+    <meta name="_csrf_header" content="${_csrf.headerName}" />
     <title>Signup Template · Bootstrap v5.3</title>
 
     <!-- Bootstrap CSS from CDN -->
@@ -13,7 +15,7 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <!-- Custom styles -->
-    <link href="./login.css" rel="stylesheet">
+
 
     <style>
         .bd-placeholder-img {
@@ -94,6 +96,7 @@
             display: block !important;
         }
     </style>
+    <link href="static/css/login/signup.css" rel="stylesheet">
 </head>
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -167,8 +170,8 @@
             <label for="password">Password</label>
         </div>
         <div class="form-floating">
-            <input type="password" class="form-control" id="floatingConfirmPassword" name="confirmPassword" placeholder="Confirm Password">
-            <label for="floatingConfirmPassword">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password">
+            <label for="confirmPassword">Confirm Password</label>
         </div>
 
         <button class="btn btn-primary w-100 py-2" id='signupButton' type="submit">Sign up</button>
