@@ -1,5 +1,6 @@
 package com.team8.teamproject.login.controller;
 
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.controller.dto.MemberLoginDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.repository.MemberRepository;
@@ -41,7 +42,7 @@ public class LoginController {
         return "redirect:/"; // 회원가입 후 로그인 페이지로 리디렉션
     }
 
-    @PostMapping("/login")
+    @PostMapping("/boards")
     public String loginUser(@RequestParam("email") String email,
                             @RequestParam("password") String password,
                             HttpSession session, Model model) {
@@ -55,6 +56,7 @@ public class LoginController {
             if (member.getPassword().equals(password)) {
                 // 로그인 성공 시 세션에 사용자 정보를 저장합니다.
                 session.setAttribute("loggedInUser", member);
+                session.setAttribute("userName", new MemberDto(member));
                 return "board/boards"; // 대시보드 페이지로 리디렉션
             } else {
                 // 비밀번호가 일치하지 않을 경우 오류 메시지를 모델에 추가합니다.
