@@ -19,16 +19,16 @@
         font-family: "Elice DX Neolli", sans-serif;
       }
     </style>
-    <title>게시글 추가</title>
+    <title>영화 게시글 추가</title>
   </head>
   <body>
     <div class="container my-5">
       <div class="header mb-5">
-        <h1 class="text-center">게시글 추가</h1>
+        <h1 class="text-center">영화 게시글 추가</h1>
       </div>
-      <form th:action="@{/posts/create(boardId=${boardId})}" method="post">
+      <form th:action="@{/posts/create(boardId=${boardId})}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
-          <label for="title">게시글 제목</label>
+          <label for="title">영화 제목</label>
           <input
             type="text"
             class="form-control"
@@ -38,6 +38,14 @@
             placeholder="게시글 제목 입력 (최대 30자)"
             required
           />
+        </div>
+        <div class="form-group row">
+          <label for="inputFile" class="col-sm-2 col-form-label">첨부 파일</label>
+          <div class="col-sm-10">
+            <div class="custom-file" id="inputFile">
+              <input name="file" type="file" class="custom-file-input" id="customFile" />
+            </div>
+          </div>
         </div>
         <div class="mb-3">
           <label for="content">내용</label>
