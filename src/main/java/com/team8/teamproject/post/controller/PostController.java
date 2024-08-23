@@ -2,11 +2,15 @@ package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.post.domain.Post;
+import com.team8.teamproject.post.dto.FileDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.team8.teamproject.post.service.PostService;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -18,26 +22,16 @@ public class PostController {
         this.postService = postService;
     }
 
-    // 전체 게시글 조회
-    /*
-    @GetMapping("/board/{boardId}")
-    public String getBoardPost(@PathVariable Long boardId, Model model){
-        List<Post> readPost = postService.readByBoardId(boardId);
-        Board readBoard = postService.readBoard(boardId);
-        model.addAttribute("post", readPost);
-        model.addAttribute("board", readBoard);
-        return "board/board";
-    }
-    */
-    // Create
+    // Create, 파일 업로드
     @GetMapping("/posts/create")
     public String getCreatePost(@RequestParam(value = "boardId") Long boardId, Model model){
         model.addAttribute("boardId", boardId);
         return "post/createPost";
     }
     @PostMapping("/posts/create")
-    public String createPost(@RequestParam(value = "boardId") Long boardId, @RequestParam(value = "title") String title, @RequestParam(value = "content") String content) {
-        postService.createPost(boardId, title, content);
+    public String createPost(@RequestParam(value = "boardId") Long boardId, @RequestParam(value = "title") String title,
+                             @RequestParam(value = "content") String content, @RequestParam(value = "file") MultipartFile files ) throws IOException {
+        postService.createPost(boardId, title, content, files);
         return "redirect:/boards/" + boardId;
     }
 
@@ -69,4 +63,5 @@ public class PostController {
     public void getDeletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
     }
+
 }
