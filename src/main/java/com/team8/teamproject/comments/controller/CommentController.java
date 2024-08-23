@@ -3,6 +3,8 @@ package com.team8.teamproject.comments.controller;
 import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.comments.dto.AddCommentRequest;
 import com.team8.teamproject.comments.service.CommentService;
+import com.team8.teamproject.login.entity.Member;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,12 @@ public class CommentController {
 
     // 댓글 생성
     @PostMapping("/comments")
-    public String saveComments(@RequestParam("postId") Long id, @RequestParam("content") String content){
-        Comments comment = commentService.save(id, content);
+    public String saveComments(@RequestParam("postId") Long id, @RequestParam("content") String content, HttpSession session){
+
+        Member member = (Member) session.getAttribute("loggedInUser");
+
+        Comments comment = commentService.save(id, content, member);
+
         return "redirect:/posts/" + id;
     }
 
