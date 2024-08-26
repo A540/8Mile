@@ -74,7 +74,7 @@
               <p class="mb-2" th:text="${comment.content}">댓글 내용</p>
               <small class="text-secondary" th:text="${#temporals.format(comment.createdAt, 'yyyy/MM/dd HH:mm')}">createdAt</small>
 
-              <div
+              <div th:if="${session.userName != null and session.userName.userName == comment.member.userName}"
                 class="position-absolute end-0 top-50 translate-middle-y mb-3 me-3 btn-group bg-white bg-opacity-75"
                 role="group"
                 aria-label="edit-delete"
@@ -94,6 +94,20 @@
                   th:onclick="handleDeleteCommentButton(event, [[${comment.id}]]);"
                 >
                   <span class="material-symbols-outlined"> delete </span>
+                </button>
+              </div>
+
+              <div th:unless="${session.userName != null and session.userName.userName == comment.member.userName}"
+                   class="position-absolute end-0 top-50 translate-middle-y mb-3 me-3 btn-group bg-white bg-opacity-75"
+                   role="group"
+                   aria-label="like"
+              >
+                <button
+                        class="btn btn-outline-primary lh-1"
+                        th:onclick="'location.href=\'/comments/' + ${comment.id} + '/like\''"
+                >
+                  <span class="material-symbols-outlined"> favorite </span>
+                  <p th:text="${comment.likeCount}"></p>
                 </button>
               </div>
             </div>
