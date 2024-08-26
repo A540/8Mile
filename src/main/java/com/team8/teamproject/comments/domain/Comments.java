@@ -26,6 +26,9 @@ public class Comments {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "likeCount")
+    private int likeCount;
+
     @CreatedDate //엔티티 생성시 생성 시간 저장
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
@@ -52,6 +55,9 @@ public class Comments {
         this.content = content;
     }
 
+    public void addLikeCount(){
+        this.likeCount++;
+    }
 
 //    게시물 내 댓글 개수?
 //    public int size(){}
