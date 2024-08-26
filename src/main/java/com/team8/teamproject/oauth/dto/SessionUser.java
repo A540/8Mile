@@ -17,6 +17,5 @@ public class SessionUser implements Serializable { // 직렬화 기능을 가진
     public SessionUser(Member user) {
         this.name = user.getUserName();
         this.email = user.getEmail();
-
     }
 }

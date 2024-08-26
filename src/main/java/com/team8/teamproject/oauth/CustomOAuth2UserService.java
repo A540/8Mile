@@ -4,6 +4,7 @@ import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.entity.Role;
 import com.team8.teamproject.login.repository.MemberRepository;
 import com.team8.teamproject.oauth.dto.SessionUser;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 import java.util.Collections;
@@ -48,6 +51,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 사용자 저장 또는 업데이트
         Member user = saveOrUpdate(attributes);
 
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession();
         // 세션에 사용자 정보 저장
         httpSession.setAttribute("user", new SessionUser(user));
 
