@@ -29,7 +29,7 @@ public class SecurityConfiguration {
                 // OAuth2 로그인 기능에 대한 여러 설정
 
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/boards")
+                        .loginPage("/")
                         .permitAll()
                 )
                 .csrf(
@@ -40,7 +40,11 @@ public class SecurityConfiguration {
                                 frameOptionsConfig -> frameOptionsConfig.disable()
                         )
                 )
-                .oauth2Login(Customizer.withDefaults()); // 아래 코드와 동일한 결과
+                .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login") // 로그인 페이지를 설정
+                .defaultSuccessUrl("/boards") // 로그인 성공 후 리다이렉트 URI
+                .failureUrl("/login?error") // 로그인 실패 시 리다이렉트 URI
+        );
 
 
         return http.build();
