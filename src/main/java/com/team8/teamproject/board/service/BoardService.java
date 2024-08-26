@@ -36,9 +36,13 @@ public class BoardService {
         return board.getId();
     }
 
+    @Transactional
     public Board findBoard(Long boardId) {
-        return boardRepository.findOne(boardId)
+        Board board = boardRepository.findOne(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
+        board.updateViewCount(board.getViewCount() + 1);  //조회수 업데이트
+
+        return board;
     }
 
     public List<Board> findBoards() {

@@ -149,25 +149,16 @@
                     >게시판 설명</span
                   >
                 </div>
-                <div
-                  class="position-absolute end-0 bottom-0 mb-3 me-3 btn-group bg-white bg-opacity-75"
-                  role="group"
-                  aria-label="edit-delete"
-                >
-                  <button
-                    class="btn btn-outline-primary lh-1"
-                    th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''"
-                  >
-                    <span class="material-symbols-outlined"> edit </span>
-                  </button>
-                  <button
-                    class="btn btn-outline-danger lh-1"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteModal"
-                    th:onclick="handleDeleteButton(event, [[${board.id}]]);"
-                  >
-                    <span class="material-symbols-outlined"> delete </span>
-                  </button>
+                <div class="position-absolute end-0 bottom-0 mb-3 me-3">
+                  <span class="card-text text-secondary text-wrap d-block mb-2" th:text="'조회수 : ' + ${board.viewCount}">조회수</span>
+                  <div class="btn-group bg-white bg-opacity-75" role="group" aria-label="edit-delete">
+                    <button class="btn btn-outline-primary lh-1" th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="btn btn-outline-danger lh-1" data-bs-toggle="modal" data-bs-target="#deleteModal" th:onclick="handleDeleteButton(event, [[${board.id}]]);">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
                 </div>
               </a>
             </div>
