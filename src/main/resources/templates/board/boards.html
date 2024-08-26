@@ -105,15 +105,21 @@
 
 
 
-    <title>게시판</title>
+    <title>8Mile</title>
   </head>
   <body>
     <div class="container my-5">
       <div class="header mb-5">
-        <h1 class="text-center">게시판 목록</h1>
+        <h1 class="text-center">영화 리뷰</h1>
       </div>
+
+      <div class="btn-group me-3" role="group" aria-label="sorting">
+        <a th:href="@{/boards(sort='latest')}"  href="/boards?sort=latest" class="btn btn-outline-primary">최신순 </a>
+        <a th:href="@{/boards(sort='popular')}" href="/boards?sort=popular" class="btn btn-outline-primary">인기순</a>
+      </div>
+
       <div class="d-flex justify-content-end mb-3">
-        <a th:if="${member != null}" th:href="@{/boards/create}" class="btn btn-success">게시판 추가</a>
+        <a th:if="${member != null}" th:href="@{/boards/create}" class="btn btn-success">장르 추가</a>
       </div>
       <div class="container p-0">
         <div class="row row-cols-3 position-relative">
@@ -141,33 +147,24 @@
                     class="card-title fw-bold text-dark"
                     th:text="${board.name}"
                   >
-                    게시판 이름
+                    장르 이름
                   </h4>
                   <span
                     class="card-text text-secondary text-wrap"
                     th:text="${board.description}"
-                    >게시판 설명</span
+                    >장르 설명</span
                   >
                 </div>
-                <div
-                  class="position-absolute end-0 bottom-0 mb-3 me-3 btn-group bg-white bg-opacity-75"
-                  role="group"
-                  aria-label="edit-delete"
-                >
-                  <button
-                    class="btn btn-outline-primary lh-1"
-                    th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''"
-                  >
-                    <span class="material-symbols-outlined"> edit </span>
-                  </button>
-                  <button
-                    class="btn btn-outline-danger lh-1"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteModal"
-                    th:onclick="handleDeleteButton(event, [[${board.id}]]);"
-                  >
-                    <span class="material-symbols-outlined"> delete </span>
-                  </button>
+                <div class="position-absolute end-0 bottom-0 mb-3 me-3">
+                  <span class="card-text text-secondary text-wrap d-block mb-2" th:text="'조회수 : ' + ${board.viewCount}">조회수</span>
+                  <div class="btn-group bg-white bg-opacity-75" role="group" aria-label="edit-delete">
+                    <button class="btn btn-outline-primary lh-1" th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="btn btn-outline-danger lh-1" data-bs-toggle="modal" data-bs-target="#deleteModal" th:onclick="handleDeleteButton(event, [[${board.id}]]);">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
                 </div>
               </a>
             </div>
@@ -176,7 +173,7 @@
         <span
           th:if="${#lists.isEmpty(boards)}"
           class="d-block w-100 text-center"
-          >생성된 게시판이 없습니다.</span
+          >생성된 장르 게시판이 없습니다.</span
         >
       </div>
     </div>
@@ -192,7 +189,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="deleteModalLabel">
-              게시판을 삭제하시겠습니까?
+              장르 게시판을 삭제하시겠습니까?
             </h1>
             <button
               type="button"

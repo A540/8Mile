@@ -9,10 +9,12 @@ public class BoardsViewDto {
     private Long id;
     private String name;
     private String description;
+    private long viewCount;
 
     public BoardsViewDto(Board board) {
         this.id = board.getId();
         this.name = board.getName();
         this.description = board.getDescription();
+        this.viewCount = board.getViewCount();
     }
 }
