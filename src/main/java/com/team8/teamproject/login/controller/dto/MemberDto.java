@@ -13,7 +13,6 @@ public class MemberDto {
     @NonNull
     private String userName;
 
-
     public MemberDto(Member member)  {
         this.userName = member.getUserName();
     }

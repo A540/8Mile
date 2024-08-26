@@ -3,6 +3,7 @@ package com.team8.teamproject.post.domain;
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.comments.domain.Comments;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,6 +31,9 @@ public class Post {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    // 파일 업로드 관련
+    private Long fileId;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comments> comments = new ArrayList<>();
 
@@ -46,10 +50,11 @@ public class Post {
 
     }
     // BoardId를 포함하는 생성자
-    public Post(Board board, String title, String content){
+    public Post(Board board, String title, String content, Long fileId){
         this.board = board;
         this.title = title;
         this.content = content;
+        this.fileId = fileId;
     }
 
     public Post(Post post) {
@@ -57,6 +62,7 @@ public class Post {
         this.title = post.getTitle();
         this.content = post.getContent();
     }
+
 }
 
 

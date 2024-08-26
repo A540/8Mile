@@ -1,9 +1,9 @@
 package com.team8.teamproject.comments.service;
 
 import com.team8.teamproject.comments.domain.Comments;
-import com.team8.teamproject.comments.dto.AddCommentRequest;
 import com.team8.teamproject.comments.mapper.CommentMapper;
 import com.team8.teamproject.comments.repository.CommentRepository;
+import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.repository.PostRepository;
 import jakarta.transaction.Transactional;
@@ -29,9 +29,12 @@ public class CommentService {
         return commentRepository.findByPost(post);
     }
 
-    public Comments save(long id, String content) {
+    public Comments save(long id, String content, Member member) {
+
+
+
         Post basePost = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not Found Post" + id));
-        Comments comment = new Comments(content, basePost);
+        Comments comment = new Comments(content, basePost, member);
         return commentRepository.save(comment);
     }
 
