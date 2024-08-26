@@ -1,6 +1,8 @@
 package com.team8.teamproject.login.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,18 +43,33 @@ public class Member {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
 
+    @Enumerated(EnumType.STRING) // Enum 타입은 문자열 형태로 저장해야 함
+    //@NotNull
+    private Role role;
 
-    public Member(String userName, String email, String password) {
+
+    @Builder
+    public Member(String userName, String email, String password, Role role) {
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     //생성 메서드
-    public Member createMember(String userName, String email, String password) {
-        Member newMember = new Member(userName, email, password);
+    public Member createMember(String userName, String email, String password, Role role) {
+        Member newMember = new Member(userName, email, password, role);
         return newMember;
     }
 
+    public Member update(String userName, String password, Role role) {
+        this.userName = userName;
+        this.password = password;
+        this.role = role;
+        return this;
+    }
 
+    public String getRoleKey() {
+        return this.role.getKey();
+    }
 }
