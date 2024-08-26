@@ -37,17 +37,16 @@ public class LoginController {
 
     @PostMapping("/signup")
     public String createUser(@ModelAttribute Member member) {
-        // 회원 정보를 저장합니다.
+        // 회원 정보를 저장
         memberRepository.save(member);
         return "redirect:/"; // 회원가입 후 로그인 페이지로 리디렉션
     }
 
-    @PostMapping("/boards")
+    @PostMapping("/login")
     public String loginUser(@RequestParam("email") String email,
                             @RequestParam("password") String password,
                             HttpSession session, Model model) {
 
-        //Optional 처리를 여기서 하면 안된다했는데 언제고치지
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
         if (memberOptional.isPresent()) {
@@ -55,9 +54,9 @@ public class LoginController {
 
             // 비밀번호가 일치하는지 확인합니다.
             if (member.getPassword().equals(password)) {
-
+                // 로그인 성공 시 세션에 사용자 정보를 저장합니다.
                 session.setAttribute("loggedInUser", member);
-                session.setAttribute("userName", new MemberDto(member));
+                session.setAttribute("userName", member.getUserName());
                 return "redirect:/boards"; // 대시보드 페이지로 리디렉션
             } else {
                 // 비밀번호가 일치하지 않을 경우 오류 메시지를 모델에 추가합니다.
@@ -71,7 +70,8 @@ public class LoginController {
         }
     }
 
-    @PostMapping("/logout")
+
+    @GetMapping("/logout")
     public String logoutUser(HttpSession session) {
         // 로그아웃 시 세션을 무효화합니다.
         session.invalidate();
