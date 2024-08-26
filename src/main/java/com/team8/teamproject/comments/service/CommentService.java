@@ -61,4 +61,11 @@ public class CommentService {
     public void delete(Long id) {
         commentRepository.deleteById(id);
     }
+
+
+    @Transactional
+    public void addLike(Long id) {
+        Comments comments = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
+        comments.addLikeCount();
+    }
 }
