@@ -33,4 +33,18 @@ public class BoardRepository {
                 .getResultList();
     }
 
+    //최신순 정렬
+    public List<Board> findAllByOrderByLatest() {
+        return em.createQuery("select b from Board b where b.isDeleted = false order by b.createdAt desc", Board.class)
+                .getResultList();
+    }
+
+    //인기순 정렬
+    public List<Board> findAllByOrderByPopular() {
+        return em.createQuery("select b from Board b where b.isDeleted = false order by b.viewCount desc", Board.class)
+                .getResultList();
+    }
+
+
+
 }
