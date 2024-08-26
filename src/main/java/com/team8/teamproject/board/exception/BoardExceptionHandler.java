@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
-//@RestControllerAdvice
+@RestControllerAdvice
 public class BoardExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> BoardDuplicateExceptionHandler(IllegalArgumentException e) {
-        log.error("[IllegalArgumentException] ex", e);
+    @ExceptionHandler(BoardNotFoundException.class)
+    public ResponseEntity<ErrorResponse> boardNotFoundExceptionHandler(BoardNotFoundException e) {
+        log.error("[BoardNotFoundException] ex", e);
         ErrorResponse response = new ErrorResponse("BAD", e.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

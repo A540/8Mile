@@ -25,12 +25,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/boards")
 public class BoardController {
 
     private final BoardService boardService;
 
     //== 게시판 목록 ==//
-    @GetMapping("/boards")
+    @GetMapping
     public String getBoards(@RequestParam(value = "sort", required = false) String sort, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         //session 정보 가져오기
@@ -64,7 +65,7 @@ public class BoardController {
     }
 
     //== 게시판 상세 ==//
-    @GetMapping("/boards/{boardId}")
+    @GetMapping("/{boardId}")
     public String getBoard(@PathVariable(value = "boardId") Long boardId,
                            @RequestParam(value = "keyword", required = false) String keyword, Model model, Pageable pageable) {
 
@@ -83,14 +84,14 @@ public class BoardController {
     }
 
     //== 게시판 생성 ==//
-    @GetMapping("/boards/create")
+    @GetMapping("/create")
     public String createBoardForm(Model model) {
 
         model.addAttribute("boardForm", new BoardForm());
         return "board/createBoard";
     }
 
-    @PostMapping("/boards/create")
+    @PostMapping("/create")
     public String createBoard(@Valid @ModelAttribute BoardForm boardForm, BindingResult bindingResult) {
 
         //게시판 이름이나 설명을 잘못 적으면 (특수문자, 공백 등)
@@ -111,7 +112,7 @@ public class BoardController {
     }
 
     //== 게시판 수정 ==//
-    @GetMapping("/boards/{boardId}/edit")
+    @GetMapping("/{boardId}/edit")
     public String updateBoardForm(@PathVariable(value = "boardId") Long boardId, Model model) {
         Board updateBoard = boardService.findBoard(boardId);
         UpdateBoardForm boardForm = new UpdateBoardForm(boardId, updateBoard.getName(), updateBoard.getDescription());
@@ -120,13 +121,13 @@ public class BoardController {
         return "board/editBoard";
     }
 
-    @PostMapping("/boards/{boardId}/edit")
+    @PostMapping("/{boardId}/edit")
     public String updateBoard(@PathVariable(value = "boardId") Long boardId, @ModelAttribute UpdateBoardForm boardForm) {
         boardService.updateBoard(boardId, boardForm.getName(), boardForm.getDescription());
         return "redirect:/boards";
     }
 
-    @DeleteMapping("/boards/{boardId}/delete")
+    @DeleteMapping("/{boardId}/delete")
     public String deleteBoard(@PathVariable(value = "boardId") Long boardId) {
         boardService.deleteBoard(boardId);
 

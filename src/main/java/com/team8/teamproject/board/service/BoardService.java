@@ -3,6 +3,7 @@ package com.team8.teamproject.board.service;
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.repository.BoardRepository;
+import com.team8.teamproject.board.exception.BoardNotFoundException;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class BoardService {
     @Transactional
     public Board findBoard(Long boardId) {
         Board board = boardRepository.findOne(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
+                .orElseThrow(() -> new BoardNotFoundException("게시판이 존재하지 않습니다."));
         board.updateViewCount(board.getViewCount() + 1);  //조회수 업데이트
 
         return board;
@@ -70,7 +71,7 @@ public class BoardService {
 
         //Dirty check
         Board updateBoard = boardRepository.findOne(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시판이 존재하지 않습니다."));
+                .orElseThrow(() -> new BoardNotFoundException("게시판이 존재하지 않습니다."));
 
         updateBoard.updateBoard(name, description);
     }
