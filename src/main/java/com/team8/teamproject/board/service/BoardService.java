@@ -49,6 +49,16 @@ public class BoardService {
         return boardRepository.findALlByIsDeletedFalse();
     }
 
+    public List<Board> findBoardsBySort(String sort) {
+        if (sort.equals("latest")) {
+            return boardRepository.findAllByOrderByLatest();
+        } else if (sort.equals("popular")) {
+            return boardRepository.findAllByOrderByPopular();
+        }
+
+        return boardRepository.findALlByIsDeletedFalse();
+    }
+
     //단일 책임 원칙 위배 -> 테스트 후 PostService로 이전 TODO
     public Page<Post> findPostsByBoardId(Long boardId, String keyword, Pageable pageable) {
         return postRepository.findAllByBoardIdKeyword(boardId, keyword, pageable);

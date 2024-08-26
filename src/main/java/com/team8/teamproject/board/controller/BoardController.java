@@ -31,7 +31,7 @@ public class BoardController {
 
     //== 게시판 목록 ==//
     @GetMapping("/boards")
-    public String getBoards(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    public String getBoards(@RequestParam(value = "sort", required = false) String sort, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         //session 정보 가져오기
         HttpSession session = request.getSession(false);
@@ -47,7 +47,14 @@ public class BoardController {
 
 
         //게시판 정보
-        List<Board> boards = boardService.findBoards();
+        List<Board> boards = null;
+        if(sort == null) {  //정렬 정보가 없으면 기본값
+            boards = boardService.findBoards();
+        }
+        else {
+            boards = boardService.findBoardsBySort(sort);
+        }
+
         List<BoardsViewDto> boardsViewDtoList = boards.stream()
                 .map(BoardsViewDto::new)
                 .collect(Collectors.toList());

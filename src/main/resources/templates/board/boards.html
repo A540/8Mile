@@ -112,6 +112,12 @@
       <div class="header mb-5">
         <h1 class="text-center">게시판 목록</h1>
       </div>
+
+      <div class="btn-group me-3" role="group" aria-label="sorting">
+        <a th:href="@{/boards(sort='latest')}"  href="/boards?sort=latest" class="btn btn-outline-primary">최신순 </a>
+        <a th:href="@{/boards(sort='popular')}" href="/boards?sort=popular" class="btn btn-outline-primary">인기순</a>
+      </div>
+
       <div class="d-flex justify-content-end mb-3">
         <a th:if="${member != null}" th:href="@{/boards/create}" class="btn btn-success">게시판 추가</a>
       </div>
