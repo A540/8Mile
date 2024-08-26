@@ -32,6 +32,8 @@ public class Board {
     private LocalDateTime modifiedAt;
     private boolean isDeleted;
 
+    private long viewCount;  //조회수
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Member member;
@@ -67,6 +69,10 @@ public class Board {
         this.isDeleted = true;
     }
 
+    //조회수 업데이트
+    public void updateViewCount(long viewCount) {
+        this.viewCount = viewCount;
+    }
 
 
 }

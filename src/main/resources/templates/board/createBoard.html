@@ -22,12 +22,12 @@
         color: red;
       }
     </style>
-    <title>게시판 추가</title>
+    <title>장르 추가</title>
   </head>
   <body>
     <div class="container my-5">
       <div class="header mb-5">
-        <h1 class="text-center">게시판 추가</h1>
+        <h1 class="text-center">장르 추가</h1>
       </div>
 
 
@@ -39,7 +39,7 @@
 
       <form th:action="@{/boards/create}" th:object="${boardForm}" method="post">
         <div class="mb-3">
-          <label for="name">게시판 이름</label>
+          <label for="name">장르명</label>
           <input
             type="text"
             th:field="*{name}"
@@ -47,26 +47,26 @@
             id="name"
             name="name"
             maxlength="20"
-            placeholder="게시판 이름 입력 (최대 20자)"
+            placeholder="장르명 입력 (최대 20자)"
             required
             th:errorclass="field-error"
           />
-          <div class="field-error" th:errors="*{name}">게시판 이름 오류</div>
+          <div class="field-error" th:errors="*{name}">장르 이름 오류</div>
         </div>
         <div class="mb-3">
-          <label for="description">게시판 설명</label>
+          <label for="description">장르 설명</label>
           <textarea
             class="form-control"
             th:field="*{description}"
             id="description"
             name="description"
             maxlength="200"
-            placeholder="게시판 설명 입력 (최대 200자)"
+            placeholder="장르 설명 입력 (최대 200자)"
             th:errorclass="field-error"
           ></textarea>
-          <div class="field-error" th:errors="*{description}">게시판 설명 오류</div>
+          <div class="field-error" th:errors="*{description}">장르 설명 오류</div>
         </div>
-        <button type="submit" class="btn btn-primary">게시판 추가</button>
+        <button type="submit" class="btn btn-primary">장르 추가</button>
         <button
           type="button"
           class="btn btn-secondary"
