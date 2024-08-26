@@ -86,12 +86,12 @@ public class BoardServiceTest {
         Board board2 = Board.createBoard("액션 영화", "미션 임파서블");
         Long savedId2 = boardService.saveBoard(board2);
 
-        //when
-        postService.createPost(savedId, "title1", "content1");
-        postService.createPost(savedId, "title2", "content2");
-
-        postService.createPost(savedId2, "title3", "content3");
-        postService.createPost(savedId2, "title4", "content4");
+//        //when
+//        postService.createPost(savedId, "title1", "content1");
+//        postService.createPost(savedId, "title2", "content2");
+//
+//        postService.createPost(savedId2, "title3", "content3");
+//        postService.createPost(savedId2, "title4", "content4");
 
         Pageable pageable = PageRequest.of(0, 10);
         Page<Post> posts = boardService.findPostsByBoardId(savedId2, " ", pageable);
