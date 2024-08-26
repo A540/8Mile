@@ -46,4 +46,15 @@ public class CommentController {
         commentService.delete(id);
         return "redirect:" + referrer;
     }
+
+    @GetMapping("/comments/{commentId}/like")
+    public String likeThisComment(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer, @PathVariable("commentId") Long id, HttpSession session){
+        // 로그인을 하지 않았다면 로그인 페이지로 전환
+        if(session.getAttribute("loggedInUser") == null){
+            return "redirect:/";
+        }
+
+        commentService.addLike(id);
+        return "redirect:" + referrer;
+    }
 }
