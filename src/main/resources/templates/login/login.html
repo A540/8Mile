@@ -156,6 +156,14 @@
         </li>
     </ul>
 </div>
+<div th:if="${userName}">
+    <a th:href="@{/logout}" class="btn btn-info active" role="button">로그아웃</a>
+    <label th:text="${userName} + 님"></label>
+</div>
+<div th:if="!${userName}">
+    <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary me-2 active" role="button">Google Login</a>
+</div>
+
 
 <main class="form-signin w-100 m-auto">
     <form method="POST" action="/login" id="loginForm  ">
