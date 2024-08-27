@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -38,10 +39,10 @@ public class Member {
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDateTime createdAt;
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @Enumerated(EnumType.STRING) // Enum 타입은 문자열 형태로 저장해야 함
     //@NotNull
@@ -56,11 +57,6 @@ public class Member {
         this.role = role;
     }
 
-    //생성 메서드
-    public Member createMember(String userName, String email, String password, Role role) {
-        Member newMember = new Member(userName, email, password, role);
-        return newMember;
-    }
 
     public Member update(String userName, String password, Role role) {
         this.userName = userName;
