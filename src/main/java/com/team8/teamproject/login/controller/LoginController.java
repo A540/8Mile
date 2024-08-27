@@ -1,9 +1,10 @@
 package com.team8.teamproject.login.controller;
 
-import com.team8.teamproject.login.controller.dto.MemberDto;
-import com.team8.teamproject.login.controller.dto.MemberLoginDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.repository.MemberRepository;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,18 +12,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpSession;
-
-import java.io.PrintWriter;
 import java.util.Optional;
 
 @Controller
 public class LoginController {
 
     private final MemberRepository memberRepository;
-
-    public LoginController(MemberRepository memberRepository) {
+    private final PasswordEncoder passwordEncoder;
+    public LoginController(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/")
@@ -36,11 +35,24 @@ public class LoginController {
     }
 
     @PostMapping("/signup")
-    public String createUser(@ModelAttribute Member member) {
-        // 회원 정보를 저장
+    public String createUser(@ModelAttribute Member member, Model model) {
+        if (memberRepository.existsByEmail(member.getEmail())) {
+            model.addAttribute("error", "이미 존재하는 이메일입니다.");
+            return "login/signup"; // 에러 메시지와 함께 회원가입 페이지로 다시 리턴
+        }
+
+        if (memberRepository.existsByUserName(member.getUserName())) {
+            model.addAttribute("error", "이미 존재하는 닉네임(활동명)입니다.");
+            return "login/signup"; // 에러 메시지와 함께 회원가입 페이지로 다시 리턴
+        }
+
+        // 중복이 없으면 회원 정보를 저장
+        String encodedPassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encodedPassword); // 암호화된 비밀번호 설정
         memberRepository.save(member);
         return "redirect:/"; // 회원가입 후 로그인 페이지로 리디렉션
     }
+
 
     @PostMapping("/login")
     public String loginUser(@RequestParam("email") String email,
@@ -53,20 +65,18 @@ public class LoginController {
             Member member = memberOptional.get();
 
             // 비밀번호가 일치하는지 확인합니다.
-            if (member.getPassword().equals(password)) {
+            if (passwordEncoder.matches(password, member.getPassword())) {  // matches 사용
                 // 로그인 성공 시 세션에 사용자 정보를 저장합니다.
                 session.setAttribute("loggedInUser", member);
                 session.setAttribute("userName", member.getUserName());
-                return "redirect:/boards"; // 대시보드 페이지로 리디렉션
+                return "redirect:/boards";
             } else {
-                // 비밀번호가 일치하지 않을 경우 오류 메시지를 모델에 추가합니다.
-                model.addAttribute("error", "아이디 또는 비밀번호를 다시 입력하세요. ");
-                return "login/login"; // 다시 로그인 페이지로
+                model.addAttribute("error", "아이디 또는 비밀번호를 다시 입력하세요.");
+                return "login/login";
             }
         } else {
-            // 이메일이 일치하는 사용자를 찾지 못한 경우 오류 메시지를 모델에 추가합니다.
             model.addAttribute("error", "아이디를 다시 입력하세요.");
-            return "login/login"; // 다시 로그인 페이지로
+            return "login/login";
         }
     }
 

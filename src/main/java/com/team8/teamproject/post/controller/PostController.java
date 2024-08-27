@@ -2,7 +2,7 @@ package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.post.domain.Post;
-import com.team8.teamproject.post.storage.StorageService;
+//import com.team8.teamproject.post.storage.StorageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class PostController {
 
     private final PostService postService;
 
-    private StorageService storageService;
+//    private StorageService storageService;
 
     public PostController(PostService postService){
         this.postService = postService;
