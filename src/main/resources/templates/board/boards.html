@@ -46,6 +46,8 @@
       .board-item:hover > .btn-group {
         display: flex;
       }
+
+
     </style>
 
     <!-- 비회원 네비게이션 바 -->
@@ -113,21 +115,24 @@
         <h1 class="text-center">영화 리뷰</h1>
       </div>
 
-      <div class="btn-group me-3" role="group" aria-label="sorting">
-        <a th:href="@{/boards(sort='latest')}"  href="/boards?sort=latest" class="btn btn-outline-primary">최신순 </a>
-        <a th:href="@{/boards(sort='popular')}" href="/boards?sort=popular" class="btn btn-outline-primary">인기순</a>
-      </div>
-
-      <div class="d-flex justify-content-end mb-3">
+      <div class="d-flex justify-content-between mb-3">
+        <div class="btn-group" role="group" aria-label="sorting">
+          <a th:href="@{/boards(sort='latest')}" href="/boards?sort=latest" class="btn btn-outline-primary">최신순</a>
+          <a th:href="@{/boards(sort='popular')}" href="/boards?sort=popular" class="btn btn-outline-primary">인기순</a>
+        </div>
         <a th:if="${member != null}" th:href="@{/boards/create}" class="btn btn-success">장르 추가</a>
       </div>
+
+
       <div class="container p-0">
         <div class="row row-cols-3 position-relative">
           <div
-            class="col mb-3"
+            class="col mb-5"
             th:unless="${#lists.isEmpty(boards)}"
             th:each="board : ${boards}"
           >
+            <hr class="my-3" />
+
             <div
               class="card"
               onmouseover="event.currentTarget.classList.add('shadow')"
@@ -139,7 +144,7 @@
               >
                 <img
                   class="img-thumbnail w-50 h-50 me-3"
-                  src="../../static/film.jpg"
+                  src="../../static/film.png"
                   alt="hellobit"
                 />
                 <div>
@@ -158,6 +163,15 @@
                 <div class="position-absolute end-0 bottom-0 mb-3 me-3">
                   <span class="card-text text-secondary text-wrap d-block mb-2" th:text="'조회수 : ' + ${board.viewCount}">조회수</span>
                   <div class="btn-group bg-white bg-opacity-75" role="group" aria-label="edit-delete">
+
+                    <div class="me-3">
+                      <button class="btn btn-outline-secondary lh-1" id="bookmarkButton"  th:id="'bookmarkButton-' + ${board.id}"  th:onclick="toggleBookmark(event, [[${board.id}]])">
+                        <span class="material-symbols-outlined" id="bookmarkIcon"  th:id="'bookmarkIcon-' + ${board.id}"  >bookmark</span>
+                      </button>
+                    </div>
+
+
+
                     <button class="btn btn-outline-primary lh-1" th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''">
                       <span class="material-symbols-outlined">edit</span>
                     </button>
@@ -242,5 +256,47 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
+
+    <script th:inline="javascript">
+      function toggleBookmark(e, boardId) {
+        e.preventDefault();
+
+        fetch(`/bookmark/${boardId}`, {
+          method: "POST",
+        }).then(response => {
+          if (response.ok) {
+            // const bookmarkButton = document.getElementById('bookmarkButton-${boardId}');
+            // const bookmarkIcon = document.getElementById('bookmarkIcon-${boardId}');
+            const bookmarkButton = document.getElementById('bookmarkButton-' + boardId);
+            const bookmarkIcon = document.getElementById('bookmarkIcon-' + boardId);
+
+
+
+            console.log('bookmarkButton:', bookmarkButton); // 요소가 존재하는지 확인
+            console.log('bookmarkIcon:', bookmarkIcon); // 요소가 존재하는지 확인
+            // if (!bookmarkButton || !bookmarkIcon) {
+            //   console.error(`Elements with IDs 'bookmarkButton-${boardId}' or 'bookmarkIcon-${boardId}' not found.`);
+            //   return;
+            // }
+
+            // Toggle the icon and button's class
+            if (bookmarkIcon.textContent === 'bookmark') {
+              bookmarkIcon.textContent = 'bookmark_added';
+              bookmarkButton.classList.remove('btn-outline-secondary');
+              bookmarkButton.classList.add('btn-secondary');
+            } else {
+              bookmarkIcon.textContent = 'bookmark';
+              bookmarkButton.classList.remove('btn-secondary');
+              bookmarkButton.classList.add('btn-outline-secondary');
+            }
+          } else {
+            console.error('Bookmarking failed');
+          }
+        }).catch(error => {
+          console.error('Error:', error);
+        });
+      }
+    </script>
+
   </body>
 </html>
