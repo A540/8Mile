@@ -10,21 +10,21 @@ import lombok.*;
 public class FileDTO {
     private Long id;
     private String filename;
-    private String filePath;
+    private String filepath;
 
     public Files toEntity () {
         Files file = Files.builder()
                     .id(id)
                     .filename(filename)
-                    .filePath(filePath)
+                    .filePath(filepath)
                     .build();
         return file;
     }
 
     @Builder
-    public FileDTO(Long id, String filename, String filePath) {
+    public FileDTO(Long id, String filename, String filepath) {
         this.id = id;
         this.filename = filename;
-        this.filePath = filePath;
+        this.filepath = filepath;
     }
 }

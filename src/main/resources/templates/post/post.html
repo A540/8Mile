@@ -49,6 +49,10 @@
         <div class="header mb-3">
           <h2 class="text-start" th:text="${post.title}">게시글 제목</h2>
         </div>
+        <div>
+          <p class="m-0">영화 포스터</p>
+          <img th:src="|images/${post.fileId}|">
+        </div>
         <p class="m-0" th:text="${post.content}">게시글 내용</p>
         <hr class="mt-4" />
         <h4 class="mb-3">
