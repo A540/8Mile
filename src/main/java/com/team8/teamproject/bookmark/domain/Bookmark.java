@@ -19,7 +19,7 @@ public class Bookmark {
     @Column(name = "bookmark_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -30,7 +30,6 @@ public class Bookmark {
     //연관 관계 메서드
     public void linkMember(Member member) {
         this.member = member;
-//        member.
     }
 
     public void linkBoard(Board board) {

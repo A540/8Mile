@@ -39,4 +39,12 @@ public class BookmarkService {
     public List<Bookmark> findAllByMember(Long memberId) {
         return bookmarkRepository.findAllByMemberId(memberId);
     }
+
+    @Transactional
+    public void deleteBookmark(Long bookmarkId) {
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new IllegalArgumentException("북마크한 게시판이 존재하지 않습니다."));
+
+        bookmarkRepository.delete(bookmark);
+    }
 }
