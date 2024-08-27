@@ -1,6 +1,7 @@
 package com.team8.teamproject.comments.service;
 
 import com.team8.teamproject.comments.domain.Comments;
+import com.team8.teamproject.comments.dto.ReadCommentResponse;
 import com.team8.teamproject.comments.exception.CommentNotFoundException;
 import com.team8.teamproject.comments.exception.PostNotFoundException;
 import com.team8.teamproject.comments.mapper.CommentMapper;
@@ -29,10 +30,10 @@ public class CommentService {
 
 
 
-    public List<Comments> findAll(long id) {
+    public List<ReadCommentResponse> findCommentsByPostId(long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
-        return commentRepository.findByPost(post);
+        return commentMapper.commentsToResponses(commentRepository.findByPost(post));
     }
 
     @Transactional
