@@ -1,6 +1,6 @@
 package com.team8.teamproject.post.controller;
 
-import com.team8.teamproject.comments.domain.Comments;
+import com.team8.teamproject.comments.service.CommentService;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.storage.StorageService;
 import org.springframework.http.HttpStatus;
@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.team8.teamproject.post.service.PostService;
 import org.springframework.web.multipart.MultipartFile;
+import com.team8.teamproject.comments.dto.ReadCommentResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,11 +20,13 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     private StorageService storageService;
 
-    public PostController(PostService postService){
+    public PostController(PostService postService, CommentService commentService){
         this.postService = postService;
+        this.commentService = commentService;
     }
 
     // Create, 파일 업로드
@@ -41,11 +44,11 @@ public class PostController {
 
     // Read, 게시글 상세 조회
     @GetMapping("/posts/{postId}")
-    public String readPost(@PathVariable Long postId, Model model) {
+    public String readPost(@PathVariable("postId") Long postId, Model model) {
         Post readPost = postService.readPost(postId);
-        List<Comments> readComment = postService.readComment(readPost);
+        List<ReadCommentResponse> readComments = commentService.findCommentsByPostId(readPost.getId());
         model.addAttribute("post", readPost);
-        model.addAttribute("comments", readComment);
+        model.addAttribute("comments", readComments);
         return "post/post";
     }
 
