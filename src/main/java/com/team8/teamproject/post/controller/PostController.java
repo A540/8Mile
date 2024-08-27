@@ -47,10 +47,15 @@ public class PostController {
     public String readPost(@PathVariable("postId") Long postId, Model model) {
         Post readPost = postService.readPost(postId);
         List<ReadCommentResponse> readComments = commentService.findCommentsByPostId(readPost.getId());
+
+        String nlString = System.lineSeparator();
+
         model.addAttribute("post", readPost);
         model.addAttribute("comments", readComments);
+        model.addAttribute("nlString", nlString);
         return "post/post";
     }
+
 
     // Update
     @GetMapping("/posts/{postId}/edit")
