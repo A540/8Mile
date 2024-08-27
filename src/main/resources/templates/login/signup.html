@@ -151,6 +151,10 @@
     </ul>
 </div>
 
+<div th:if="${error}" class="alert alert-danger" role="alert">
+    <p th:text="${error}"></p>
+</div>
+
 <main class="form-signin w-100 m-auto">
     <form method="POST" action="/signup" id="signupForm">
         <img class="mb-4" src="../../static/img.png" alt="8miles" width="72" height="57">
@@ -179,7 +183,7 @@
         <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p>
     </form>
 </main>
-<!--<script src="static/js/validateLogin.js"></script>-->
+<script src="static/js/validateLogin.js"></script>
 <script>
 
 </script>

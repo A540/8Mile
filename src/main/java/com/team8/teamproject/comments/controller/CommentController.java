@@ -22,6 +22,7 @@ public class CommentController {
     public String saveComments(@RequestParam("postId") Long id, @RequestParam("content") String content, HttpSession session){
         //세션에 저장한 loggedInUser 값을 사용해 Member 객체 가져오기
         Member member = (Member) session.getAttribute("loggedInUser");
+        
         // 로그인을 하지 않았다면 로그인 페이지로 전환
         if(member == null){
             return "redirect:/";

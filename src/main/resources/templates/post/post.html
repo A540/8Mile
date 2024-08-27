@@ -49,6 +49,10 @@
         <div class="header mb-3">
           <h2 class="text-start" th:text="${post.title}">게시글 제목</h2>
         </div>
+        <div>
+          <p class="m-0">영화 포스터</p>
+          <img th:src="|images/${post.fileId}|">
+        </div>
         <p class="m-0" th:text="${post.content}">게시글 내용</p>
         <hr class="mt-4" />
         <h4 class="mb-3">
@@ -66,20 +70,21 @@
         >
           <div
             class="card comment"
-            style="min-width: 30%"
+            style="min-width: 30%; max-width: 90%"
             th:each="comment : ${comments}"
           >
             <div class="card-body position-relative">
               <p class="text-info mb-2" th:text="${comment.member.userName}">유저 이름</p>
-              <p class="mb-2" th:text="${comment.content}">댓글 내용</p>
+              <p class="mb-2" th:utext="${#strings.replace(comment.content, nlString, '&lt;br /&gt;')}">댓글 내용</p>
               <small class="text-secondary" th:text="${#temporals.format(comment.createdAt, 'yyyy/MM/dd HH:mm')}">createdAt</small>
 
-              <div th:if="${session.userName != null and session.userName.userName == comment.member.userName}"
+              <div
                 class="position-absolute end-0 top-50 translate-middle-y mb-3 me-3 btn-group bg-white bg-opacity-75"
                 role="group"
                 aria-label="edit-delete"
               >
                 <button
+                  th:if="${session.userName != null and session.userName == comment.member.userName}"
                   class="btn btn-outline-primary lh-1"
                   data-bs-toggle="modal"
                   data-bs-target="#editCommentModal"
@@ -88,6 +93,7 @@
                   <span class="material-symbols-outlined"> edit </span>
                 </button>
                 <button
+                  th:if="${session.userName != null and session.userName == comment.member.userName}"
                   class="btn btn-outline-danger lh-1"
                   data-bs-toggle="modal"
                   data-bs-target="#deleteCommentModal"
@@ -95,13 +101,7 @@
                 >
                   <span class="material-symbols-outlined"> delete </span>
                 </button>
-              </div>
 
-              <div th:unless="${session.userName != null and session.userName.userName == comment.member.userName}"
-                   class="position-absolute end-0 top-50 translate-middle-y mb-3 me-3 btn-group bg-white bg-opacity-75"
-                   role="group"
-                   aria-label="like"
-              >
                 <button
                         class="btn btn-outline-primary lh-1"
                         th:onclick="'location.href=\'/comments/' + ${comment.id} + '/like\''"
@@ -109,6 +109,8 @@
                   <span class="material-symbols-outlined"> favorite </span>
                   <p th:text="${comment.likeCount}"></p>
                 </button>
+              </div>
+
               </div>
             </div>
           </div>
