@@ -34,7 +34,7 @@ public class CommentController {
 
     // 댓글 수정
     @PostMapping("/comments/{commentId}/edit")
-    public String updateComments(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer, @PathVariable("commentId") Long id, @RequestParam String content){
+    public String updateComments(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer, @PathVariable("commentId") Long id, @RequestParam("content") String content){
         // -> HttpHeaders.REFERER = 요청을 보낸 시점에 url
         Comments updatedComment = commentService.update(id, content);
         return "redirect:" + referrer;

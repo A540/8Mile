@@ -1,6 +1,8 @@
 package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.comments.domain.Comments;
+import com.team8.teamproject.comments.dto.ReadCommentResponse;
+import com.team8.teamproject.comments.service.CommentService;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.dto.FileDTO;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +19,11 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
-    public PostController(PostService postService){
+    public PostController(PostService postService, CommentService commentService){
         this.postService = postService;
+        this.commentService = commentService;
     }
 
     // Create, 파일 업로드
@@ -35,32 +39,46 @@ public class PostController {
         return "redirect:/boards/" + boardId;
     }
 
+//    // Read, 게시글 상세 조회
+//    @GetMapping("/posts/{postId}")
+//    public String readPost(@PathVariable Long postId, Model model) {
+//        Post readPost = postService.readPost(postId);
+//        List<Comments> readComment = postService.readComment(readPost);
+//        model.addAttribute("post", readPost);
+//        model.addAttribute("comments", readComment);
+//        return "post/post";
+//    }
+
     // Read, 게시글 상세 조회
     @GetMapping("/posts/{postId}")
-    public String readPost(@PathVariable Long postId, Model model) {
+    public String readPost(@PathVariable("postId") Long postId, Model model) {
         Post readPost = postService.readPost(postId);
-        List<Comments> readComment = postService.readComment(readPost);
+        List<ReadCommentResponse> readComments = commentService.findCommentsByPostId(readPost.getId());
+
+        String nlString = System.lineSeparator();
+
         model.addAttribute("post", readPost);
-        model.addAttribute("comments", readComment);
+        model.addAttribute("comments", readComments);
+        model.addAttribute("nlString", nlString);
         return "post/post";
     }
 
     // Update
     @GetMapping("/posts/{postId}/edit")
-    public String getEditPost(@PathVariable Long postId, Model model){
+    public String getEditPost(@PathVariable("postId") Long postId, Model model){
         Post readPost = postService.readPost(postId);
         model.addAttribute("post", readPost);
         return "post/editPost";
     }
     @PostMapping("/posts/{postId}/edit")
-    public String editPost(@PathVariable Long postId, Post post) {
+    public String editPost(@PathVariable("postId") Long postId, Post post) {
         postService.editPost(postId, post);
         return "redirect:/posts/" + postId;
     }
 
     // Delete
     @DeleteMapping("/posts/{postId}")
-    public void getDeletePost(@PathVariable Long postId) {
+    public void getDeletePost(@PathVariable("postId") Long postId) {
         postService.deletePost(postId);
     }
 
