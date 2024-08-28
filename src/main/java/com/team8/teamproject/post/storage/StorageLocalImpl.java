@@ -8,7 +8,9 @@ import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.dto.FileDTO;
 import com.team8.teamproject.post.repository.FileRepository;
 import com.team8.teamproject.post.repository.PostRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.File;
 import java.io.InputStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StorageLocalImpl implements StorageService {
@@ -30,15 +33,17 @@ public class StorageLocalImpl implements StorageService {
 
     // Create
     @Transactional(readOnly = true)
-    public void createLocalPost(Long boardId, String title, String content, MultipartFile file, Member member) throws IOException {
+    public void createLocalPost(Long boardId, String title, String content, MultipartFile file, Member member, HttpServletRequest request) throws IOException {
         Board board = boardRepository.findOne(boardId).orElseThrow(IllegalArgumentException::new);
 
         // 파일 업르도 관련
         String filename = file.getOriginalFilename();
-        String savePath = "C:\\upload\\files"; // 경로: c:\\upload\\files
+        String savePath = "C:\\upload\\files"; // 절대경로: c:\\upload\\files
+        String savePath2 = request.getServletContext().getRealPath("/"); // 나의 상대경로: C:\\Users\\user\\AppData\\ ,,,
 
+        log.info(savePath);
         // 경로에 폴더가 없다면 생성
-        if (!new java.io.File(savePath).exists()) {
+        if (!new File(savePath).exists()) {
             try{
                 new File(savePath).mkdirs();
             }
