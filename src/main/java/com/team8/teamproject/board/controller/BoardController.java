@@ -6,6 +6,7 @@ import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.service.BoardService;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
+import com.team8.teamproject.post.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 public class BoardController {
 
     private final BoardService boardService;
+    private final PostService postService;
 
     //== 게시판 목록 ==//
     @GetMapping

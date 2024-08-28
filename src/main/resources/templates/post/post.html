@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:width="http://www.w3.org/1999/xhtml"
+      xmlns:max-width="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8" />
     <link
@@ -16,7 +17,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
-    <link rel="stylesheet" href="post.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/post.css" />
 
     <style>
       html,
@@ -52,14 +53,36 @@
         </div>
         <div>
           <p class="m-0" style="text-align:right;" th:text="'작성자: ' + ${post.member.userName}">작성자</p>
-          <br>
+          <p style="text-align:right;">
+            <img src="/static/star.png" width="30" height="30">
+            <span class="m-0" th:text="${ratingAVG} + ' /5 ' +'(' +${countRating} +')'" >별점</span>
+          </p>
         </div>
         <div>
           <p class="m-0">영화 포스터</p>
-          <img th:src="|images/${post.fileId}|">
+          <img th:src="|images/${post.fileId}|" style="width: 100%; max-width: 300px;">
         </div>
         <br>
         <p class="m-0" th:text="${post.content}">게시글 내용</p>
+        <br>
+        <form method="post" enctype="multipart/form-data">
+          <div>
+            <p class="m-0">별점:</p>
+            <fieldset>
+              <input type="radio" name="rating" value="5" id="rate1"><label
+                    for="rate1">★</label>
+              <input type="radio" name="rating" value="4" id="rate2"><label
+                    for="rate2">★</label>
+              <input type="radio" name="rating" value="3" id="rate3"><label
+                    for="rate3">★</label>
+              <input type="radio" name="rating" value="2" id="rate4"><label
+                    for="rate4">★</label>
+              <input type="radio" name="rating" value="1" id="rate5"><label
+                    for="rate5">★</label>
+            </fieldset>
+            <button type="submit" class="btn btn-primary">등록</button>
+          </div>
+        </form>
         <br>
         <hr class="mt-4" />
         <h4 class="mb-3">
