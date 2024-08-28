@@ -41,5 +41,10 @@ document.getElementById('signupForm').addEventListener('submit', function(event)
     if (!valid) {
         event.preventDefault();
         alert(errorMessage);
+    }else {
+        // If validation is successful
+        alert('성공적으로 회원가입되었습니다.');
     }
+
+
 });
