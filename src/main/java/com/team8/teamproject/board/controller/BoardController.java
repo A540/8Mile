@@ -152,7 +152,7 @@ public class BoardController {
         Member loggedInUser = (Member) session.getAttribute("loggedInUser");
 //            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
 
-        boardService.deleteBoard(boardId, loggedInUser.getId());
+        boardService.deleteBoard(boardId);
 
         return "board/boards";
     }
