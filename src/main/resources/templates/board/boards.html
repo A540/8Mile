@@ -87,9 +87,9 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" th:text="${member.userName}" role="button" data-bs-toggle="dropdown" aria-expanded="false">내 정보</a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" th:href="@{/items/new}">회원 정보</a></li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li><a class="dropdown-item" th:href="@{/items}">북마크</a></li>
+<!--                  <li><a class="dropdown-item" th:href="@{/items/new}">회원 정보</a></li>-->
+<!--                  <li><hr class="dropdown-divider" /></li>-->
+                  <li><a class="dropdown-item" th:href="@{/bookmark/{memberId}(memberId=${member.id})}">북마크</a></li>
                 </ul>
               </li>
             </ul>
@@ -181,7 +181,9 @@
                     <button th:if="${member != null}" class="btn btn-outline-primary lh-1" th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''">
                       <span class="material-symbols-outlined">edit</span>
                     </button>
-                    <button th:if="${member != null}" class="btn btn-outline-danger lh-1" data-bs-toggle="modal" data-bs-target="#deleteModal" th:onclick="handleDeleteButton(event, [[${board.id}]]);">
+                    <button th:if="${member != null}" class="btn btn-outline-danger lh-1" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            th:onclick="handleDeleteButton(event, [[${board.id}]]);">
                       <span class="material-symbols-outlined">delete</span>
                     </button>
                   </div>
