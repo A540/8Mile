@@ -43,7 +43,7 @@
           <label for="inputFile" class="col-sm-2 col-form-label">영화 포스터 첨부</label>
           <div class="col-sm-10">
             <div class="custom-file" id="inputFile">
-              <input name="file" type="file" class="custom-file-input" id="customFile" />
+              <input name="file" type="file" class="custom-file-input" id="customFile" accept=".png, .jfif" required/>
             </div>
           </div>
         </div>
@@ -54,6 +54,7 @@
             id="content"
             name="content"
             placeholder="내용 입력"
+            required
           ></textarea>
         </div>
         <button type="submit" class="btn btn-primary">업로드</button>

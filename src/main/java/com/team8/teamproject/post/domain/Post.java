@@ -4,8 +4,7 @@ import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.login.entity.Member;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -63,7 +62,6 @@ public class Post {
         this.title = post.getTitle();
         this.content = post.getContent();
     }
-
 }
 
 
