@@ -11,9 +11,11 @@ import java.util.Optional;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
+    @Query("select b from Bookmark b join fetch b.board where b.member.id = :memberId")
     List<Bookmark> findAllByMemberId(Long memberId);
 
-    Optional<Bookmark> findAllByMemberIdAndBoardId(Long memberId, Long boardID);
+    @Query("select b.board.id from Bookmark b where b.member.id = :memberId")
+    List<Long> findBookMarkedBoardIds(Long memberId);
 
     //북마크 상태 return  -> 1이상이면 북마크 체크 상태
     @Query("select count(b) from Bookmark b where b.member.id = :memberId and b.board.id = :boardId")
@@ -22,4 +24,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     @Modifying
     @Query("delete from Bookmark b where b.member.id = :memberId and b.board.id = :boardId ")
     void deleteBookmark(Long memberId, Long boardId);
+
+
 }

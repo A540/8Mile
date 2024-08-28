@@ -10,11 +10,16 @@ public class BoardsViewDto {
     private String name;
     private String description;
     private long viewCount;
+    private boolean isBookMarked;
 
     public BoardsViewDto(Board board) {
         this.id = board.getId();
         this.name = board.getName();
         this.description = board.getDescription();
         this.viewCount = board.getViewCount();
+    }
+
+    public void changeIsBookMarked(boolean bookmarked) {
+        isBookMarked = bookmarked;
     }
 }

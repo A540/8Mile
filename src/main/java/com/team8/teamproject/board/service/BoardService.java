@@ -4,6 +4,7 @@ import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.repository.BoardRepository;
 import com.team8.teamproject.board.exception.BoardNotFoundException;
+import com.team8.teamproject.bookmark.service.BookmarkService;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final PostRepository postRepository;
+    private final BookmarkService bookmarkService;
 
     @Transactional
     public Long saveBoard(Board board) {
@@ -50,6 +52,7 @@ public class BoardService {
         return boardRepository.findALlByIsDeletedFalse();
     }
 
+    //정렬기준으로 찾기
     public List<Board> findBoardsBySort(String sort) {
         if (sort.equals("latest")) {
             return boardRepository.findAllByOrderByLatest();
@@ -65,7 +68,6 @@ public class BoardService {
         return postRepository.findAllByBoardIdKeyword(boardId, keyword, pageable);
     }
 
-
     @Transactional
     public void updateBoard(Long boardId, String name, String description) {
 
@@ -78,12 +80,13 @@ public class BoardService {
 
     //== 게시판 soft delete ==//
     @Transactional
-    public void deleteBoard(Long boardId) {
+    public void deleteBoard(Long boardId, Long memberId) {
         Board deleteBoard = boardRepository.findOne(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("이미 삭제된 게시판입니다."));
 
         //dirty check
         deleteBoard.deleteBoard();
+        bookmarkService.deleteBookmark(memberId, boardId);
     }
 
 }

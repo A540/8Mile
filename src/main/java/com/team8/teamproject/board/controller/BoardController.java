@@ -4,6 +4,8 @@ import com.team8.teamproject.board.controller.dto.*;
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.service.BoardService;
+import com.team8.teamproject.bookmark.domain.Bookmark;
+import com.team8.teamproject.bookmark.service.BookmarkService;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,36 +32,37 @@ import java.util.stream.Collectors;
 public class BoardController {
 
     private final BoardService boardService;
+    private final BookmarkService bookmarkService;
 
-    //== 게시판 목록 ==//
     @GetMapping
-    public String getBoards(@RequestParam(value = "sort", required = false) String sort, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    public String getBoards(@RequestParam(value = "sort", required = false) String sort, Model model, HttpServletRequest request) {
 
-        //session 정보 가져오기
+
+        // 세션 정보 가져오기
         HttpSession session = request.getSession(false);
-
-        MemberViewDto memberViewDto = null;
-        if (session != null && session.getAttribute("loggedInUser") != null) {
+        List<Long> bookMarkedBoardId = new ArrayList<>();
+        if (session != null) {
             Member loggedInUser = (Member) session.getAttribute("loggedInUser");
-            memberViewDto = new MemberViewDto(loggedInUser);
-        }
-        model.addAttribute("member", memberViewDto);
+            if (loggedInUser != null) {
+                MemberViewDto memberViewDto = new MemberViewDto(loggedInUser);
+                model.addAttribute("member", memberViewDto);
 
+                bookMarkedBoardId = bookmarkService.getBookMarkedBoardId(loggedInUser.getId());
+            }
+        }
 
         //게시판 정보
-        List<Board> boards = null;
-        if(sort == null) {  //정렬 정보가 없으면 기본값
-            boards = boardService.findBoards();
-        }
-        else {
-            boards = boardService.findBoardsBySort(sort);
+        List<Board> boards = (sort == null) ? boardService.findBoards() : boardService.findBoardsBySort(sort);
+
+        //북마크 상태 저장 -> DTO 반환
+        List<BoardsViewDto> boardsViewDtoList = new ArrayList<>();
+        for (Board b : boards) {
+            BoardsViewDto dto = new BoardsViewDto(b);
+            dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
+            boardsViewDtoList.add(dto);
         }
 
-        List<BoardsViewDto> boardsViewDtoList = boards.stream()
-                .map(BoardsViewDto::new)
-                .collect(Collectors.toList());
         model.addAttribute("boards", boardsViewDtoList);
-
         return "board/boards";
     }
 
@@ -92,7 +96,6 @@ public class BoardController {
     @PostMapping("/create")
     public String createBoard(@Valid @ModelAttribute BoardForm boardForm, BindingResult bindingResult) {
 
-        //게시판 이름이나 설명을 잘못 적으면 (특수문자, 공백 등)
         if (bindingResult.hasErrors()) {
             log.info("error={}", bindingResult.getObjectName());
             return "board/createBoard";
@@ -126,8 +129,16 @@ public class BoardController {
     }
 
     @DeleteMapping("/{boardId}/delete")
-    public String deleteBoard(@PathVariable(value = "boardId") Long boardId) {
-        boardService.deleteBoard(boardId);
+    public String deleteBoard(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        Member loggedInUser = (Member) session.getAttribute("loggedInUser");
+        boardService.deleteBoard(boardId, loggedInUser.getId());
 
         return "board/boards";
     }

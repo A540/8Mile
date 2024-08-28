@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -52,9 +53,25 @@ public class BookmarkService {
         return data;
     }
 
+    //북마크된 게시판 아이디 리턴
+    public List<Long> getBookMarkedBoardId(Long memberId) {
+
+        return bookmarkRepository.findBookMarkedBoardIds(memberId);
+//        List<Bookmark> bookmarkList = bookmarkRepository.findAllByMemberId(memberId);
+//
+//        return bookmarkList.stream()
+//                .map(b -> b.getBoard().getId())
+//                .collect(Collectors.toList());
+    }
+
+
     public List<Bookmark> findAllByMember(Long memberId) {
         return bookmarkRepository.findAllByMemberId(memberId);
     }
 
+    @Transactional
+    public void deleteBookmark(Long memberId, Long boardId) {
+        bookmarkRepository.deleteBookmark(memberId, boardId);
+    }
 
 }

@@ -165,17 +165,23 @@
                   <div class="btn-group bg-white bg-opacity-75" role="group" aria-label="edit-delete">
 
                     <div class="me-3">
-                      <button class="btn btn-outline-secondary lh-1" id="bookmarkButton"  th:id="'bookmarkButton-' + ${board.id}"  th:onclick="toggleBookmark(event, [[${board.id}]])">
-                        <span class="material-symbols-outlined" id="bookmarkIcon"  th:id="'bookmarkIcon-' + ${board.id}"  >bookmark</span>
+                      <button th:if="${member != null}"
+                              class="btn"
+                              th:classappend="${board.isBookMarked} ? 'btn-secondary' : 'btn-outline-secondary'"
+                              id="bookmarkButton"
+                              th:id="'bookmarkButton-' + ${board.id}"
+                              th:onclick="toggleBookmark(event, [[${board.id}]])">
+                          <span class="material-symbols-outlined"
+                                th:text="${board.isBookMarked} ? 'bookmark_added' : 'bookmark'"
+                                id="bookmarkIcon"
+                                th:id="'bookmarkIcon-' + ${board.id}">bookmark</span>
                       </button>
                     </div>
 
-
-
-                    <button class="btn btn-outline-primary lh-1" th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''">
+                    <button th:if="${member != null}" class="btn btn-outline-primary lh-1" th:onclick="'event.preventDefault(); location.href=\'/boards/' + ${board.id} + '/edit\''">
                       <span class="material-symbols-outlined">edit</span>
                     </button>
-                    <button class="btn btn-outline-danger lh-1" data-bs-toggle="modal" data-bs-target="#deleteModal" th:onclick="handleDeleteButton(event, [[${board.id}]]);">
+                    <button th:if="${member != null}" class="btn btn-outline-danger lh-1" data-bs-toggle="modal" data-bs-target="#deleteModal" th:onclick="handleDeleteButton(event, [[${board.id}]]);">
                       <span class="material-symbols-outlined">delete</span>
                     </button>
                   </div>
