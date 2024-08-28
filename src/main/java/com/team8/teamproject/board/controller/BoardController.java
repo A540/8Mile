@@ -6,6 +6,7 @@ import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.service.BoardService;
 import com.team8.teamproject.bookmark.domain.Bookmark;
 import com.team8.teamproject.bookmark.service.BookmarkService;
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,7 @@ public class BoardController {
         List<Long> bookMarkedBoardId = new ArrayList<>();
         if (session != null) {
             Member loggedInUser = (Member) session.getAttribute("loggedInUser");
+//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
             if (loggedInUser != null) {
                 MemberViewDto memberViewDto = new MemberViewDto(loggedInUser);
                 model.addAttribute("member", memberViewDto);
@@ -69,10 +71,20 @@ public class BoardController {
     //== 게시판 상세 ==//
     @GetMapping("/{boardId}")
     public String getBoard(@PathVariable(value = "boardId") Long boardId,
-                           @RequestParam(value = "keyword", required = false) String keyword, Model model, Pageable pageable) {
+                           @RequestParam(value = "keyword", required = false) String keyword, Model model,
+                           HttpSession session, Pageable pageable) {
 
         //게시판 정보
         Board board = boardService.findBoard(boardId);
+
+        // 세션에서 조회 여부 확인
+        String sessionKey = "viewedBoard_" + boardId;
+        if (session.getAttribute(sessionKey) == null) {
+            // 세션에 조회 기록이 없으면 조회수 증가
+            boardService.updateViewCount(board);
+            session.setAttribute(sessionKey, true);  // 세션에 조회 기록 추가
+        }
+
         BoardViewDto boardViewDto = new BoardViewDto(board);
 
         //게시글 정보 (keyword 검색)
@@ -138,6 +150,8 @@ public class BoardController {
         }
 
         Member loggedInUser = (Member) session.getAttribute("loggedInUser");
+//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
+
         boardService.deleteBoard(boardId, loggedInUser.getId());
 
         return "board/boards";

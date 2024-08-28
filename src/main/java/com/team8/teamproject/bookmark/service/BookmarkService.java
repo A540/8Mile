@@ -1,5 +1,6 @@
 package com.team8.teamproject.bookmark.service;
 
+import com.team8.teamproject.board.controller.dto.BoardsViewDto;
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.exception.BoardNotFoundException;
 import com.team8.teamproject.board.repository.BoardRepository;
@@ -55,13 +56,7 @@ public class BookmarkService {
 
     //북마크된 게시판 아이디 리턴
     public List<Long> getBookMarkedBoardId(Long memberId) {
-
         return bookmarkRepository.findBookMarkedBoardIds(memberId);
-//        List<Bookmark> bookmarkList = bookmarkRepository.findAllByMemberId(memberId);
-//
-//        return bookmarkList.stream()
-//                .map(b -> b.getBoard().getId())
-//                .collect(Collectors.toList());
     }
 
 
@@ -73,5 +68,37 @@ public class BookmarkService {
     public void deleteBookmark(Long memberId, Long boardId) {
         bookmarkRepository.deleteBookmark(memberId, boardId);
     }
+
+
+    //== 북마크 VIEW에 맞는 DTO 리턴 ==//
+    public List<BoardsViewDto> findBoardsViewDto(Long memberId) {
+
+        List<Bookmark> bookmarkList = bookmarkRepository.findAllByMemberId(memberId);
+
+        //북마크된 게시판 리스트
+        List<Board> boardList = bookmarkList.stream()
+                .map(Bookmark::getBoard)
+                .collect(Collectors.toList());
+
+        //북마크된 게시판 IDs
+        List<Long> bookMarkedBoardId = bookmarkList.stream()
+                .map(b -> b.getBoard().getId())
+                .collect(Collectors.toList());
+
+//        boardList.stream()
+//                .map(Board::getId)
+//                .collect(Collectors.toList())
+
+        List<BoardsViewDto> boardsViewDtos = boardList.stream()
+                .map(b -> {
+                    BoardsViewDto dto = new BoardsViewDto(b);
+                    dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return boardsViewDtos;
+    }
+
 
 }

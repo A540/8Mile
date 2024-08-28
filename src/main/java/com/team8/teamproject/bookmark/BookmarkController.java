@@ -2,8 +2,6 @@ package com.team8.teamproject.bookmark;
 
 import com.team8.teamproject.board.controller.dto.BoardsViewDto;
 import com.team8.teamproject.board.controller.dto.MemberViewDto;
-import com.team8.teamproject.board.domain.Board;
-import com.team8.teamproject.bookmark.domain.Bookmark;
 import com.team8.teamproject.bookmark.service.BookmarkService;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.service.MemberService;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -36,14 +33,15 @@ public class BookmarkController {
 
         //세션 정보 가져오기
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
+        if (session == null || session.getAttribute("loggedInUser") == null) {    //TODO MemberDto로 받기
             log.info("no user");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         Member loggedInUser = (Member) session.getAttribute("loggedInUser");
+//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
+
 
         Map<String, String> data = bookmarkService.clickBookmark(loggedInUser.getId(), boardId);
-
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
@@ -57,13 +55,14 @@ public class BookmarkController {
 
         //세션 정보 가져오기
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
+        if (session == null || session.getAttribute("loggedInUser") == null) {   //TODO MemberDto로 받기
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         Member loggedInUser = (Member) session.getAttribute("loggedInUser");
+//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
+
 
         bookmarkService.deleteBookmark(loggedInUser.getId(), boardId);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -72,29 +71,8 @@ public class BookmarkController {
     @GetMapping("/bookmark/{memberId}")
     public String getBookMarkPage(@PathVariable(value = "memberId") Long memberId, Model model) {
 
-        List<Bookmark> bookmarkList = bookmarkService.findAllByMember(memberId);
-
-        //북마크된 게시판 리스트
-        List<Board> boardList = bookmarkList.stream().
-                map(Bookmark::getBoard)
-                .collect(Collectors.toList());
-
-        //북마크된 게시판 IDs
-        List<Long> bookMarkedBoardId = bookmarkList.stream()
-                .map(b -> b.getBoard().getId())
-                .collect(Collectors.toList());
-
-
-        List<BoardsViewDto> boardsViewDtos = boardList.stream()
-                .map(b -> {
-                    BoardsViewDto dto = new BoardsViewDto(b);
-                    dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
-                    return dto;
-                })
-                .collect(Collectors.toList());
-
+        List<BoardsViewDto> boardsViewDtos = bookmarkService.findBoardsViewDto(memberId);
         model.addAttribute("boards", boardsViewDtos);
-
 
         //회원 정보 조회
         Member member = memberService.findById(memberId);
