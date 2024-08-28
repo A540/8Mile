@@ -1,5 +1,6 @@
 package com.team8.teamproject.comments.domain;
 
+import com.team8.teamproject.file.UploadFile;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
 import jakarta.persistence.*;
@@ -21,13 +22,16 @@ public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id", updatable = false)
-    private Long id;
+    private Long id;    // commentId
 
     @Column(name = "content", nullable = false)
-    private String content;
+    private String content;     // 댓글 내용
 
     @Column(name = "likeCount")
-    private int likeCount;
+    private int likeCount;      // 좋아요 개수
+
+    @Column(name = "storeFileName")
+    private String storeFileName;      // 댓글에 사용된 이미지
 
     @CreatedDate //엔티티 생성시 생성 시간 저장
     @Column(name = "createdAt")
@@ -39,13 +43,20 @@ public class Comments {
 
     @ManyToOne
     @JoinColumn(name = "postId")
-    private Post post;
+    private Post post;          // 댓글이 위치한 게시글
 
     @ManyToOne
     @JoinColumn(name = "memberId")
-    private Member member;
+    private Member member;      // 댓글을 작성한 유저
 
-    public Comments(String content, Post post, Member member){
+    public Comments(String content, Post post, Member member, String storeFileName){
+        this.content = content;
+        this.post = post;
+        this.member = member;
+        this.storeFileName = storeFileName;
+    }
+
+    public Comments(String content, Post post, Member member) {
         this.content = content;
         this.post = post;
         this.member = member;

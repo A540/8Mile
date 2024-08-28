@@ -83,6 +83,9 @@
             <div class="card-body position-relative">
               <p class="text-info mb-2" th:text="${comment.member.userName}">유저 이름</p>
               <p class="mb-2" th:utext="${#strings.replace(comment.content, nlString, '&lt;br /&gt;')}">댓글 내용</p>
+              <div th:if="${comment.storeFileName != null}">
+                <img style="max-width: 100%" th:src="|comments/images/${comment.storeFileName}|">
+              </div>
               <small class="text-secondary" th:text="${#temporals.format(comment.createdAt, 'yyyy/MM/dd HH:mm')}">createdAt</small>
 
               <div
@@ -132,6 +135,7 @@
           class="mt-3 row"
           th:action="@{/comments(postId=${post.id})}"
           method="POST"
+          enctype="multipart/form-data"
         >
           <div class="input-group">
             <textarea
@@ -141,6 +145,9 @@
               placeholder="댓글 작성하기"
             ></textarea>
             <button class="btn btn-primary">업로드</button>
+          </div>
+          <div class="custom-file" id="inputFile">
+            <input name="file" type="file" class="custom-file-input" id="customFile" />
           </div>
         </form>
 
