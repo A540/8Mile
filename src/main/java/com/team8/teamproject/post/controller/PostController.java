@@ -53,14 +53,27 @@ public class PostController {
     public String readPost(@PathVariable("postId") Long postId, Model model) {
         Post readPost = postService.readPost(postId);
         List<ReadCommentResponse> readComments = commentService.findCommentsByPostId(readPost.getId());
+        Double ratingAVG = postService.getRatingAVG(postId);
+        Integer countRating = postService.getCountRating(postId);
 
         String nlString = System.lineSeparator();
 
         model.addAttribute("post", readPost);
         model.addAttribute("comments", readComments);
         model.addAttribute("nlString", nlString);
+        model.addAttribute("ratingAVG", ratingAVG);
+        model.addAttribute("countRating", countRating);
         return "post/post";
     }
+
+    // 별점 기능 관련
+    @PostMapping("/posts/{postId}")
+    public String createRating(@PathVariable("postId") Long postId, HttpSession session, @RequestParam(value = "rating") double rating){
+        Member loginMember = (Member) session.getAttribute("loggedInUser");
+        postService.createRating(postId, loginMember.getId(), rating);
+        return "redirect:/posts/" + postId;
+    }
+
 
     // Update
     @GetMapping("/posts/{postId}/edit")
