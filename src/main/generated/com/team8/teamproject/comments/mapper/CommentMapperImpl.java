@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-27T15:14:48+0900",
-    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
+    date = "2024-08-28T12:29:44+0900",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
 public class CommentMapperImpl implements CommentMapper {
@@ -28,14 +28,16 @@ public class CommentMapperImpl implements CommentMapper {
         int likeCount = 0;
         LocalDateTime createdAt = null;
         Member member = null;
+        String storeFileName = null;
 
         id = comments.getId();
         content = comments.getContent();
         likeCount = comments.getLikeCount();
         createdAt = comments.getCreatedAt();
         member = comments.getMember();
+        storeFileName = comments.getStoreFileName();
 
-        ReadCommentResponse readCommentResponse = new ReadCommentResponse( id, content, likeCount, createdAt, member );
+        ReadCommentResponse readCommentResponse = new ReadCommentResponse( id, content, likeCount, createdAt, member, storeFileName );
 
         return readCommentResponse;
     }

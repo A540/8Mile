@@ -6,15 +6,20 @@ import com.team8.teamproject.comments.exception.CommentNotFoundException;
 import com.team8.teamproject.comments.exception.PostNotFoundException;
 import com.team8.teamproject.comments.mapper.CommentMapper;
 import com.team8.teamproject.comments.repository.CommentRepository;
+import com.team8.teamproject.file.FileStore;
+import com.team8.teamproject.file.UploadFile;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.repository.MemberRepository;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.repository.PostRepository;
+import com.team8.teamproject.post.storage.StorageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -24,9 +29,11 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
 
     private final CommentMapper commentMapper;
+
+    private final FileStore fileStore;
+    private final StorageService storageService;
 
 
 
@@ -37,9 +44,17 @@ public class CommentService {
     }
 
     @Transactional
-    public Comments save(long id, String content, Member member) {
+    public Comments saveComment(long id, String content, Member member, MultipartFile file) throws IOException {
         Post basePost = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
-        Comments comment = new Comments(content, basePost, member);
+        Comments comment;
+        UploadFile uploadFile = fileStore.storeFile(file);
+        if(uploadFile == null){
+            comment = new Comments(content, basePost, member);
+        }
+        else{
+            comment = new Comments(content, basePost, member, uploadFile.getStoreFileName());
+        }
+
         return commentRepository.save(comment);
     }
 
@@ -68,5 +83,10 @@ public class CommentService {
     public void addLike(Long id) {
         Comments comments = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
         comments.addLikeCount();
+    }
+
+    public byte[] getCommentImage(String filename) throws IOException {
+        String filePath = fileStore.getFullPath(filename);
+        return storageService.getImageByFileName(filePath);
     }
 }

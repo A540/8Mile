@@ -2,10 +2,9 @@ package com.team8.teamproject.post.domain;
 
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.comments.domain.Comments;
+import com.team8.teamproject.login.entity.Member;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -41,20 +40,21 @@ public class Post {
     @JoinColumn(name = "board_Id")
     Board board;
 
-//    연관관계 설정
-//    @ManyToOne
-//    @JoinColumn(name = "userId")
-//    user user;
+
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    Member member;
 
     public Post(){
 
     }
     // BoardId를 포함하는 생성자
-    public Post(Board board, String title, String content, Long fileId){
+    public Post(Board board, String title, String content, Long fileId, Member member){
         this.board = board;
         this.title = title;
         this.content = content;
         this.fileId = fileId;
+        this.member = member;
     }
 
     public Post(Post post) {
@@ -62,7 +62,6 @@ public class Post {
         this.title = post.getTitle();
         this.content = post.getContent();
     }
-
 }
 
 

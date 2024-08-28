@@ -20,4 +20,6 @@ public class ReadCommentResponse {
     private LocalDateTime createdAt;
 
     private Member member;
+
+    private String storeFileName;
 }
