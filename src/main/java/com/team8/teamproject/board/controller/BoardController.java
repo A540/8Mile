@@ -41,8 +41,6 @@ public class BoardController {
         if (session != null && session.getAttribute("loggedInUser") != null) {
             Member loggedInUser = (Member) session.getAttribute("loggedInUser");
             memberViewDto = new MemberViewDto(loggedInUser);
-        } else {
-            log.info("비회원 호출");
         }
         model.addAttribute("member", memberViewDto);
 

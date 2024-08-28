@@ -1,8 +1,11 @@
 package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.comments.service.CommentService;
+import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
-//import com.team8.teamproject.post.storage.StorageService;
+import com.team8.teamproject.post.storage.StorageService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +23,28 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final StorageService storageService;
     private final CommentService commentService;
 
-//    private StorageService storageService;
-
-    public PostController(PostService postService, CommentService commentService){
+    public PostController(PostService postService, StorageService storageService, CommentService commentService){
         this.postService = postService;
+        this.storageService = storageService;
         this.commentService = commentService;
     }
 
     // Create, 파일 업로드
     @GetMapping("/posts/create")
-    public String getCreatePost(@RequestParam(value = "boardId") Long boardId, Model model){
+    public String getCreatePost(@RequestParam(value = "boardId") Long boardId, Model model, HttpSession session){
         model.addAttribute("boardId", boardId);
         return "post/createPost";
     }
+
     @PostMapping("/posts/create")
     public String createPost(@RequestParam(value = "boardId") Long boardId, @RequestParam(value = "title") String title,
-                             @RequestParam(value = "content") String content, @RequestParam(value = "file") MultipartFile files ) throws IOException {
-        postService.createLocalPost(boardId, title, content, files);
+                             @RequestParam(value = "content") String content, @RequestParam(value = "file") MultipartFile files,
+                             HttpSession session, HttpServletRequest request) throws IOException {
+        Member loginMember = (Member) session.getAttribute("loggedInUser");
+        storageService.createLocalPost(boardId, title, content, files, loginMember, request);
         return "redirect:/boards/" + boardId;
     }
 
@@ -47,8 +53,12 @@ public class PostController {
     public String readPost(@PathVariable("postId") Long postId, Model model) {
         Post readPost = postService.readPost(postId);
         List<ReadCommentResponse> readComments = commentService.findCommentsByPostId(readPost.getId());
+
+        String nlString = System.lineSeparator();
+
         model.addAttribute("post", readPost);
         model.addAttribute("comments", readComments);
+        model.addAttribute("nlString", nlString);
         return "post/post";
     }
 
@@ -75,7 +85,7 @@ public class PostController {
     @GetMapping(value = "/posts/images/{fileId}",
             produces={MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable Long fileId) throws IOException {
-        byte[] image = postService.getImage(fileId);
+        byte[] image = storageService.getImage(fileId);
         return new ResponseEntity<>(image, HttpStatus.OK);
     }
 
