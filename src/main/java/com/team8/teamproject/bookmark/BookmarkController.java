@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
+
     @PostMapping("/bookmark/{boardId}")
-    public ResponseEntity<Void> addBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
+    public ResponseEntity<Map<String,String>> clickBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
@@ -27,9 +31,8 @@ public class BookmarkController {
         }
 
         Member loggedInUser = (Member) session.getAttribute("loggedInUser");
-        //북마크 등록
-        bookmarkService.saveBookmark(loggedInUser.getId(), boardId);
+        Map<String, String> data = bookmarkService.clickBookmark(loggedInUser.getId(), boardId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 }

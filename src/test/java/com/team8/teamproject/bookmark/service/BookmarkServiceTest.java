@@ -13,6 +13,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,9 +46,9 @@ class BookmarkServiceTest {
         Long boardId3 = boardService.saveBoard(board3);
 
         //when
-        bookmarkService.saveBookmark(savedMember1.getId(), boardId1);
-        bookmarkService.saveBookmark(savedMember1.getId(), boardId2);
-        bookmarkService.saveBookmark(savedMember1.getId(), boardId3);
+        bookmarkService.clickBookmark(savedMember1.getId(), boardId1);
+        bookmarkService.clickBookmark(savedMember1.getId(), boardId2);
+        bookmarkService.clickBookmark(savedMember1.getId(), boardId3);
 
         //then
         List<Bookmark> bookmarkList = bookmarkService.findAllByMember(savedMember1.getId());
@@ -62,22 +63,17 @@ class BookmarkServiceTest {
         Member savedMember1 = memberService.save(member1);
 
         Board board1 = createBoard("액션", "액션 영화");
-        Board board2 = createBoard("공포", "공포 영화");
-        Board board3 = createBoard("SF", "SF 영화");
         Long boardId1 = boardService.saveBoard(board1);
-        Long boardId2 = boardService.saveBoard(board2);
-        Long boardId3 = boardService.saveBoard(board3);
 
-        Bookmark bookmark1 = bookmarkService.saveBookmark(savedMember1.getId(), boardId1);
-        Bookmark bookmark2 = bookmarkService.saveBookmark(savedMember1.getId(), boardId2);
-        Bookmark bookmark3 = bookmarkService.saveBookmark(savedMember1.getId(), boardId3);
+        bookmarkService.clickBookmark(savedMember1.getId(), boardId1);  //북마크 저장
 
         //when
-        bookmarkService.deleteBookmark(bookmark1.getId());
+        Map<String, String> deletedData = bookmarkService.clickBookmark(savedMember1.getId(), boardId1);
 
         //then
         List<Bookmark> bookmarkList = bookmarkService.findAllByMember(member1.getId());
-        assertThat(bookmarkList.size()).isEqualTo(2);
+        assertThat(bookmarkList.size()).isEqualTo(0);
+        assertThat(deletedData.get("bookMarkStatus")).isEqualTo("unBookMark");
 
     }
 

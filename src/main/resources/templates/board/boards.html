@@ -263,38 +263,27 @@
 
         fetch(`/bookmark/${boardId}`, {
           method: "POST",
-        }).then(response => {
-          if (response.ok) {
-            // const bookmarkButton = document.getElementById('bookmarkButton-${boardId}');
-            // const bookmarkIcon = document.getElementById('bookmarkIcon-${boardId}');
-            const bookmarkButton = document.getElementById('bookmarkButton-' + boardId);
-            const bookmarkIcon = document.getElementById('bookmarkIcon-' + boardId);
+        }).then(response => response.json())
+                .then(data => {
+                  const bookmarkButton = document.getElementById('bookmarkButton-' + boardId);
+                  const bookmarkIcon = document.getElementById('bookmarkIcon-' + boardId);
 
+                  console.log('bookmarkButton:', bookmarkButton); // 요소가 존재하는지 확인
+                  console.log('bookmarkIcon:', bookmarkIcon); // 요소가 존재하는지 확인
 
-
-            console.log('bookmarkButton:', bookmarkButton); // 요소가 존재하는지 확인
-            console.log('bookmarkIcon:', bookmarkIcon); // 요소가 존재하는지 확인
-            // if (!bookmarkButton || !bookmarkIcon) {
-            //   console.error(`Elements with IDs 'bookmarkButton-${boardId}' or 'bookmarkIcon-${boardId}' not found.`);
-            //   return;
-            // }
-
-            // Toggle the icon and button's class
-            if (bookmarkIcon.textContent === 'bookmark') {
-              bookmarkIcon.textContent = 'bookmark_added';
-              bookmarkButton.classList.remove('btn-outline-secondary');
-              bookmarkButton.classList.add('btn-secondary');
-            } else {
-              bookmarkIcon.textContent = 'bookmark';
-              bookmarkButton.classList.remove('btn-secondary');
-              bookmarkButton.classList.add('btn-outline-secondary');
-            }
-          } else {
-            console.error('Bookmarking failed');
-          }
-        }).catch(error => {
-          console.error('Error:', error);
-        });
+                  if (data.bookMarkStatus === 'bookMark') {
+                    bookmarkIcon.textContent = 'bookmark_added';
+                    bookmarkButton.classList.remove('btn-outline-secondary');
+                    bookmarkButton.classList.add('btn-secondary');
+                  } else if (data.bookMarkStatus === 'unBookMark') {
+                    bookmarkIcon.textContent = 'bookmark';
+                    bookmarkButton.classList.remove('btn-secondary');
+                    bookmarkButton.classList.add('btn-outline-secondary');
+                  }
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                });
       }
     </script>
 
