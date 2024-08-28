@@ -87,7 +87,6 @@ public class SecurityConfiguration {
     }
 
 
-
     @Bean
     public RememberMeServices rememberMeServices() {
         return new TokenBasedRememberMeServices("yourRememberMeKey", userDetailsService());

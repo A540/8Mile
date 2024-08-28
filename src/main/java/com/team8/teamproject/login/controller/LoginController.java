@@ -36,7 +36,7 @@ public class LoginController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("/login")
     public String showLoginPage(HttpSession session) {
         // 현재 인증된 사용자를 확인
         System.out.println("123");
@@ -73,7 +73,7 @@ public class LoginController {
         String encodedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encodedPassword); // 암호화된 비밀번호 설정
         memberRepository.save(member);
-        return "redirect:/"; // 회원가입 후 로그인 페이지로 리디렉션
+        return "redirect:/login"; // 회원가입 후 로그인 페이지로 리디렉션
     }
 
 
