@@ -46,6 +46,12 @@ public class SecurityConfiguration {
                         .loginPage("/")
                         .permitAll()
                 )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")  // 로그아웃 성공 후 리디렉션 경로
+                        .invalidateHttpSession(true)  // 세션 무효화
+                        .deleteCookies("JSESSIONID", "remember-me")
+                )
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .headers(headerConfig -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))
                 .oauth2Login(oauth2 -> oauth2
@@ -54,10 +60,9 @@ public class SecurityConfiguration {
                         .failureUrl("/login") // 로그인 실패 시 리다이렉트 URI
                 )
                 .rememberMe(rememberMe -> rememberMe
-                        .key("yourRememberMeKey") // Remember-Me 기능의 키
-                        .tokenValiditySeconds(86400) // Remember-Me 토큰 유효 시간 (1 day)
-                        .tokenRepository(persistentTokenRepository())
-                        .rememberMeServices(rememberMeServices()) // Remember-Me 서비스 설정
+                        .rememberMeServices(rememberMeServices())
+                        .key(MY_KEY) // 비밀 키 설정
+                        .tokenValiditySeconds(86400) // 쿠키 유효 시간 설정 (24시간)
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
                         .maximumSessions(1) // 동시에 하나의 세션만 허용
@@ -81,15 +86,7 @@ public class SecurityConfiguration {
         return new RememberMeAuthenticationProvider(MY_KEY);
     }
 
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-        tokenRepository.setDataSource(dataSource);
-        // 처음에는 아래 라인을 사용하여 테이블을 자동으로 생성할 수 있습니다.
-        // 이후에는 주석 처리하여 테이블이 중복 생성되지 않도록 합니다.
-        // tokenRepository.setCreateTableOnStartup(true);
-        return tokenRepository;
-    }
+
 
     @Bean
     public RememberMeServices rememberMeServices() {
