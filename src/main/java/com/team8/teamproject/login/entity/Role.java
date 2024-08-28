@@ -1,15 +1,30 @@
 package com.team8.teamproject.login.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@Getter
-@RequiredArgsConstructor
 public enum Role {
-
-    ADMIN("ROLE_ADMIN", "관리자"),
-    USER("ROLE_USER", "사용자");
+    USER("USER"),
+    ADMIN("ADMIN");
 
     private final String key;
-    private final String title;
+
+    Role(String key) {
+        this.key = key;
+    }
+
+    @JsonValue
+    public String getKey() {
+        return key;
+    }
+
+    @JsonCreator
+    public static Role fromKey(String key) {
+        for (Role role : values()) {
+            if (role.getKey().equals(key)) {
+                return role;
+            }
+        }
+        throw new IllegalArgumentException("Unknown key: " + key);
+    }
 }
