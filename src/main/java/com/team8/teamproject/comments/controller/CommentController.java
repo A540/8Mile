@@ -54,10 +54,9 @@ public class CommentController {
 
     // 댓글 삭제
     @DeleteMapping("/comments/{commentId}")
-    public String deleteComment(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
+    public void deleteComment(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
                                 @PathVariable("commentId") Long id){
         commentService.delete(id);
-        return "redirect:" + referrer;
     }
 
     @GetMapping("/comments/{commentId}/like")
