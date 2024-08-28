@@ -92,4 +92,11 @@ public class StorageLocalImpl implements StorageService {
         inputStream.close();
         return image;
     }
+    @Transactional(readOnly = true)
+    public byte[] getImageByFileName(String filePath) throws IOException {
+        InputStream inputStream = new FileInputStream(filePath);
+        byte[] image = IOUtils.toByteArray(inputStream);
+        inputStream.close();
+        return image;
+    }
 }

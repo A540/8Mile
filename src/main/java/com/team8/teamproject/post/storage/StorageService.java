@@ -12,4 +12,5 @@ public interface StorageService {
     Long saveFile(FileDTO fileDTO);
     FileDTO getFile(Long id);
     byte[] getImage(Long fileId) throws IOException;
+    byte[] getImageByFileName(String filePath) throws IOException;
 }
