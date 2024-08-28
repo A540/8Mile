@@ -4,6 +4,7 @@ import com.team8.teamproject.comments.service.CommentService;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.storage.StorageService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,9 +42,9 @@ public class PostController {
     @PostMapping("/posts/create")
     public String createPost(@RequestParam(value = "boardId") Long boardId, @RequestParam(value = "title") String title,
                              @RequestParam(value = "content") String content, @RequestParam(value = "file") MultipartFile files,
-                             HttpSession session) throws IOException {
+                             HttpSession session, HttpServletRequest request) throws IOException {
         Member loginMember = (Member) session.getAttribute("loggedInUser");
-        storageService.createLocalPost(boardId, title, content, files, loginMember);
+        storageService.createLocalPost(boardId, title, content, files, loginMember, request);
         return "redirect:/boards/" + boardId;
     }
 
@@ -60,7 +61,6 @@ public class PostController {
         model.addAttribute("nlString", nlString);
         return "post/post";
     }
-
 
     // Update
     @GetMapping("/posts/{postId}/edit")
