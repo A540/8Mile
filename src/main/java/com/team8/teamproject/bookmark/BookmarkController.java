@@ -1,8 +1,8 @@
 package com.team8.teamproject.bookmark;
 
-import com.team8.teamproject.board.controller.dto.BoardsViewDto;
 import com.team8.teamproject.board.controller.dto.MemberViewDto;
 import com.team8.teamproject.bookmark.service.BookmarkService;
+import com.team8.teamproject.bookmark.service.dto.BookmarkedBoardDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -71,8 +71,8 @@ public class BookmarkController {
     @GetMapping("/bookmark/{memberId}")
     public String getBookMarkPage(@PathVariable(value = "memberId") Long memberId, Model model) {
 
-        List<BoardsViewDto> boardsViewDtos = bookmarkService.findBoardsViewDto(memberId);
-        model.addAttribute("boards", boardsViewDtos);
+        List<BookmarkedBoardDto> bookmarkedViewDtos = bookmarkService.findBoardsViewDto(memberId);
+        model.addAttribute("boards", bookmarkedViewDtos);
 
         //회원 정보 조회
         Member member = memberService.findById(memberId);

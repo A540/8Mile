@@ -1,11 +1,11 @@
 package com.team8.teamproject.bookmark.service;
 
-import com.team8.teamproject.board.controller.dto.BoardsViewDto;
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.exception.BoardNotFoundException;
 import com.team8.teamproject.board.repository.BoardRepository;
 import com.team8.teamproject.bookmark.domain.Bookmark;
 import com.team8.teamproject.bookmark.repository.BookmarkRepository;
+import com.team8.teamproject.bookmark.service.dto.BookmarkedBoardDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.exception.MemberNotFoundException;
 import com.team8.teamproject.login.repository.MemberRepository;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,7 +70,7 @@ public class BookmarkService {
 
 
     //== 북마크 VIEW에 맞는 DTO 리턴 ==//
-    public List<BoardsViewDto> findBoardsViewDto(Long memberId) {
+    public List<BookmarkedBoardDto> findBoardsViewDto(Long memberId) {
 
         List<Bookmark> bookmarkList = bookmarkRepository.findAllByMemberId(memberId);
 
@@ -89,9 +88,9 @@ public class BookmarkService {
 //                .map(Board::getId)
 //                .collect(Collectors.toList())
 
-        List<BoardsViewDto> boardsViewDtos = boardList.stream()
+        List<BookmarkedBoardDto> boardsViewDtos = boardList.stream()
                 .map(b -> {
-                    BoardsViewDto dto = new BoardsViewDto(b);
+                    BookmarkedBoardDto dto = new BookmarkedBoardDto(b);
                     dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
                     return dto;
                 })
