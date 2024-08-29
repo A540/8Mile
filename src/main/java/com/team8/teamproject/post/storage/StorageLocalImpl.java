@@ -2,7 +2,7 @@ package com.team8.teamproject.post.storage;
 
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.board.repository.BoardRepository;
-import com.team8.teamproject.login.entity.Member;
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.post.domain.Files;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.dto.FileDTO;
@@ -33,7 +33,7 @@ public class StorageLocalImpl implements StorageService {
 
     // Create
     @Transactional(readOnly = true)
-    public void createLocalPost(Long boardId, String title, String content, MultipartFile file, Member member, HttpServletRequest request) throws IOException {
+    public void createLocalPost(Long boardId, String title, String content, MultipartFile file, MemberDto member, HttpServletRequest request) throws IOException {
         Board board = boardRepository.findOne(boardId).orElseThrow(IllegalArgumentException::new);
 
         // 파일 업르도 관련
