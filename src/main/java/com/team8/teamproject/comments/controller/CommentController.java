@@ -3,6 +3,7 @@ package com.team8.teamproject.comments.controller;
 import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.comments.dto.AddCommentRequest;
 import com.team8.teamproject.comments.service.CommentService;
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +32,14 @@ public class CommentController {
     public String saveComments(@RequestParam("postId") Long id, @RequestParam("content") String content,
                                @RequestParam(value = "file") MultipartFile file, HttpSession session) throws IOException {
         //세션에 저장한 loggedInUser 값을 사용해 Member 객체 가져오기
-        Member member = (Member) session.getAttribute("loggedInUser");
+        MemberDto memberDto = (MemberDto) session.getAttribute("userDetails");
         
         // 로그인을 하지 않았다면 로그인 페이지로 전환
-        if(member == null){
-            return "redirect:/";
+        if(memberDto == null){
+            return "redirect:/login";
         }
 
-        Comments comment = commentService.saveComment(id, content, member, file);
+        Comments comment = commentService.saveComment(id, content, memberDto, file);
 
         return "redirect:/posts/" + id;
     }
@@ -63,8 +64,8 @@ public class CommentController {
     public String likeThisComment(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
                                   @PathVariable("commentId") Long id, HttpSession session){
         // 로그인을 하지 않았다면 로그인 페이지로 전환
-        if(session.getAttribute("loggedInUser") == null){
-            return "redirect:/";
+        if(session.getAttribute("userDetails") == null){
+            return "redirect:/login";
         }
 
         commentService.addLike(id);
