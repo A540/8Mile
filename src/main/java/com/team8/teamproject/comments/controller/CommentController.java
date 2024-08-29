@@ -5,6 +5,7 @@ import com.team8.teamproject.comments.dto.AddCommentRequest;
 import com.team8.teamproject.comments.service.CommentService;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -30,7 +31,7 @@ public class CommentController {
     // 댓글 생성
     @PostMapping("/comments")
     public String saveComments(@RequestParam("postId") Long id, @RequestParam("content") String content,
-                               @RequestParam(value = "file") MultipartFile file, HttpSession session) throws IOException {
+                               @RequestParam(value = "file") MultipartFile file, HttpSession session, HttpServletRequest request) throws IOException {
         //세션에 저장한 loggedInUser 값을 사용해 Member 객체 가져오기
         MemberDto memberDto = (MemberDto) session.getAttribute("userDetails");
         
@@ -39,7 +40,7 @@ public class CommentController {
             return "redirect:/login";
         }
 
-        Comments comment = commentService.saveComment(id, content, memberDto, file);
+        Comments comment = commentService.saveComment(id, content, memberDto, file, request);
 
         return "redirect:/posts/" + id;
     }
