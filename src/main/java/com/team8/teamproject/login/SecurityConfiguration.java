@@ -1,9 +1,12 @@
 package com.team8.teamproject.login;
 
+import com.team8.teamproject.oauth.CustomAuthenticationSuccessHandler;
+import com.team8.teamproject.oauth.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.RememberMeAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -13,11 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 
 import javax.sql.DataSource;
 
@@ -30,25 +31,31 @@ public class SecurityConfiguration {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService users) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                                 .anyRequest().permitAll() // 공개 페이지와 리소스
 //                        .anyRequest().authenticated() // 나머지 페이지는 인증 필요
                 )
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/")
+                        .loginPage("/login.html")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")  // 로그아웃 성공 후 리디렉션 경로
+                        .logoutSuccessUrl("/login")  // 로그아웃 성공 후 리디렉션 경로
                         .invalidateHttpSession(true)  // 세션 무효화
                         .deleteCookies("JSESSIONID", "remember-me")
                 )
@@ -58,11 +65,14 @@ public class SecurityConfiguration {
                         .loginPage("/login") // 로그인 페이지를 설정
                         .defaultSuccessUrl("/boards") // 로그인 성공 후 리다이렉트 URI
                         .failureUrl("/login") // 로그인 실패 시 리다이렉트 URI
+
                 )
                 .rememberMe(rememberMe -> rememberMe
-                        .rememberMeServices(rememberMeServices())
-                        .key(MY_KEY) // 비밀 키 설정
-                        .tokenValiditySeconds(86400) // 쿠키 유효 시간 설정 (24시간)
+                        .rememberMeServices(rememberMeServices()) // Remember-Me 설정
+                        .rememberMeParameter("remember-me")
+                        .key(MY_KEY)
+                        .tokenValiditySeconds(86400) // 24시간
+                        .alwaysRemember(true)
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
                         .maximumSessions(1) // 동시에 하나의 세션만 허용
@@ -72,23 +82,33 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password")
-                .roles("USER")
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .build();
-        return new InMemoryUserDetailsManager(user);
     }
 
     @Bean
-    public RememberMeAuthenticationProvider rememberMeAuthenticationProvider() {
-        return new RememberMeAuthenticationProvider(MY_KEY);
+    public InMemoryUserDetailsManager userDetailsService() {
+        UserDetails user = User.withUsername("user1")
+                .password("{noop}user1Pass")
+                .authorities("ROLE_USER")
+                .build();
+        UserDetails admin = User.withUsername("admin1")
+                .password("{noop}admin1Pass")
+                .authorities("ROLE_ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
     }
 
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
+    }
 
     @Bean
-    public RememberMeServices rememberMeServices() {
-        return new TokenBasedRememberMeServices("yourRememberMeKey", userDetailsService());
+    public PersistentTokenBasedRememberMeServices rememberMeServices() {
+        return new PersistentTokenBasedRememberMeServices(MY_KEY, userDetailsService(), persistentTokenRepository());
     }
 }
