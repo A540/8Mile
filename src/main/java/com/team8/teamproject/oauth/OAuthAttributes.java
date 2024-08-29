@@ -4,6 +4,8 @@ import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.entity.Role;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.context.request.RequestContextListener;
 
 import java.util.Map;
 
@@ -58,4 +60,8 @@ public class OAuthAttributes {
                 .role(this.role)
                 .build();
     }
+
+    @Bean
+    public RequestContextListener requestContextListener(){    return new RequestContextListener();}
+
 }
