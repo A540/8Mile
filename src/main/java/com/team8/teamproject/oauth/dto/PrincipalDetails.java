@@ -18,6 +18,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User, Serializable {
 
     // 인증된 사용자 정보
     private String name;
+    // OAuth2 로그인 시 비밀번호는 필요하지 않음
     private String email;
     private MemberDto member;
 

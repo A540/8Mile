@@ -17,9 +17,9 @@ public class MemberViewDto {
         this.email = member.getEmail();
     }
 
-    public MemberViewDto(MemberDto member) {
-        this.id = member.getId();
-        this.userName = member.getUserName();
-        this.email = member.getEmail();
+    public MemberViewDto(MemberDto memberDto) {
+        this.id = memberDto.getId();
+        this.userName = memberDto.getUserName();
+        this.email = memberDto.getEmail();
     }
 }

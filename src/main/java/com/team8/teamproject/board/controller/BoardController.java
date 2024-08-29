@@ -72,7 +72,7 @@ public class BoardController {
     @GetMapping
     public String getBoards(@RequestParam(value = "sort", required = false) String sort,
                             Model model, HttpServletRequest request,
-                            @AuthenticationPrincipal UserDetails userDetails) {
+                            @AuthenticationPrincipal PrincipalDetails userDetails) {
 
         // 세션 정보를 통해 로그인된 사용자 정보 가져오기
         MemberDto loggedInUser = getSession(request);
@@ -82,17 +82,22 @@ public class BoardController {
             if (userDetails instanceof OAuth2User) {
                 OAuth2User oAuth2User = (OAuth2User) userDetails;
                 loggedInUser = convertOAuth2UserToMemberDto(oAuth2User); // OAuth2 로그인 사용자 처리
+                if (loggedInUser != null) {
+                    model.addAttribute("member", new MemberViewDto(userDetails.getMember()));
+                }
             } else if (userDetails instanceof PrincipalDetails) {
                 PrincipalDetails principalDetails = (PrincipalDetails) userDetails;
                 loggedInUser = principalDetails.getMember(); // 일반 로그인 사용자 처리
+                log.info("================DB = {}",loggedInUser.getUserName());
+                if (loggedInUser != null) {
+                    model.addAttribute("member", new MemberViewDto(loggedInUser));
+                }
             }
         }
 
         List<Long> bookMarkedBoardId = getBookMarkedBoardId(loggedInUser);
 
-        if (loggedInUser != null) {
-            model.addAttribute("member", new MemberViewDto(loggedInUser));
-        }
+
 
         // 게시판 정보 가져오기
         List<Board> boards = (sort == null) ? boardService.findBoards() : boardService.findBoardsBySort(sort);

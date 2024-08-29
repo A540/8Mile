@@ -21,7 +21,7 @@ public class OAuthAttributes {
     @Builder
     public OAuthAttributes(Map<String, Object> attributes,
                            String nameAttributeKey, String name,
-                           String email) {
+                           String email, Role role) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.name = name;
@@ -36,7 +36,8 @@ public class OAuthAttributes {
                 attributes,
                 userNameAttributeName,
                 (String) attributes.get("name"),
-                (String) attributes.get("email")
+                (String) attributes.get("email"),
+                Role.USER
         );
     }
 
