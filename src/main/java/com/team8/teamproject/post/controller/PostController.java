@@ -1,6 +1,7 @@
 package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.comments.service.CommentService;
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.storage.StorageService;
@@ -43,7 +44,7 @@ public class PostController {
     public String createPost(@RequestParam(value = "boardId") Long boardId, @RequestParam(value = "title") String title,
                              @RequestParam(value = "content") String content, @RequestParam(value = "file") MultipartFile files,
                              HttpSession session, HttpServletRequest request) throws IOException {
-        Member loginMember = (Member) session.getAttribute("loggedInUser");
+        MemberDto loginMember = (MemberDto) session.getAttribute("userDetails");
         storageService.createLocalPost(boardId, title, content, files, loginMember, request);
         return "redirect:/boards/" + boardId;
     }
@@ -69,7 +70,7 @@ public class PostController {
     // 별점 기능 관련
     @PostMapping("/posts/{postId}")
     public String createRating(@PathVariable("postId") Long postId, HttpSession session, @RequestParam(value = "rating") double rating){
-        Member loginMember = (Member) session.getAttribute("loggedInUser");
+        MemberDto loginMember = (MemberDto) session.getAttribute("userDetails");
         postService.createRating(postId, loginMember.getId(), rating);
         return "redirect:/posts/" + postId;
     }

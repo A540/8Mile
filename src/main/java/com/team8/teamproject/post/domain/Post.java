@@ -2,6 +2,7 @@ package com.team8.teamproject.post.domain;
 
 import com.team8.teamproject.board.domain.Board;
 import com.team8.teamproject.comments.domain.Comments;
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,16 +41,13 @@ public class Post {
     @JoinColumn(name = "board_Id")
     Board board;
 
-
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    Member member;
+    MemberDto member;
 
     public Post(){
 
     }
     // BoardId를 포함하는 생성자
-    public Post(Board board, String title, String content, Long fileId, Member member){
+    public Post(Board board, String title, String content, Long fileId, MemberDto member){
         this.board = board;
         this.title = title;
         this.content = content;
