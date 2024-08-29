@@ -1,15 +1,21 @@
 package com.team8.teamproject.post.controller;
 
+import com.team8.teamproject.board.controller.dto.MemberViewDto;
 import com.team8.teamproject.comments.service.CommentService;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
+import com.team8.teamproject.login.service.MemberService;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.storage.StorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +27,19 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
     private final StorageService storageService;
     private final CommentService commentService;
-
-    public PostController(PostService postService, StorageService storageService, CommentService commentService){
-        this.postService = postService;
-        this.storageService = storageService;
-        this.commentService = commentService;
-    }
+    private final MemberService memberService;
+//
+//    public PostController(PostService postService, StorageService storageService, CommentService commentService){
+//        this.postService = postService;
+//        this.storageService = storageService;
+//        this.commentService = commentService;
+//    }
 
     // Create, 파일 업로드
     @GetMapping("/posts/create")
@@ -44,7 +52,29 @@ public class PostController {
     public String createPost(@RequestParam(value = "boardId") Long boardId, @RequestParam(value = "title") String title,
                              @RequestParam(value = "content") String content, @RequestParam(value = "file") MultipartFile files,
                              HttpSession session, HttpServletRequest request) throws IOException {
-        MemberDto loginMember = (MemberDto) session.getAttribute("userDetails");
+
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        MemberDto loginMember = null;
+        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
+            // OAuth2 로그인 사용자일 경우
+            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+            String email = oAuth2User.getAttribute("email");
+            Member user = memberService.findByEmail(email).orElse(null);
+
+            loginMember = new MemberDto(user);
+
+        } else  {
+            // 일반 로그인 사용자일 경우
+            MemberDto memberDto = getSession(request);
+
+            loginMember = memberDto;
+        }
+
+
+
+//        MemberDto loginMember = (MemberDto) session.getAttribute("userDetails");
         storageService.createLocalPost(boardId, title, content, files, loginMember, request);
         return "redirect:/boards/" + boardId;
     }
@@ -101,6 +131,13 @@ public class PostController {
     public ResponseEntity<byte[]> getImage(@PathVariable Long fileId) throws IOException {
         byte[] image = storageService.getImage(fileId);
         return new ResponseEntity<>(image, HttpStatus.OK);
+    }
+
+
+    //== 세션 로그인 멤버 정보 ==//
+    private MemberDto getSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return (session != null) ? (MemberDto) session.getAttribute("userDetails") : null;
     }
 
 }

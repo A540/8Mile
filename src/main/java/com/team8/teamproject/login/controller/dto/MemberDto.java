@@ -3,6 +3,7 @@ package com.team8.teamproject.login.controller.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.team8.teamproject.login.entity.Member;
+import com.team8.teamproject.oauth.dto.SessionUser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,4 +35,11 @@ public class MemberDto implements Serializable {
         this.userName = member.getUserName();
         this.email = member.getEmail();
     }
+
+    public MemberDto (SessionUser sessionUser) {
+               this.id= sessionUser.getId();
+                this.userName= sessionUser.getName();
+                this.email = sessionUser.getEmail();
+    }
+
 }

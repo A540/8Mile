@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,16 +30,28 @@ public class BookmarkController {
     private final BookmarkService bookmarkService;
     private final MemberService memberService;
 
+
     //== 북마크 등록, 삭제 처리 ==//
     @ResponseBody
     @PostMapping("/bookmark/{boardId}")
     public ResponseEntity<Map<String, String>> clickBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
-        //세션 정보
-        MemberDto loggedInUser = getSession(request);
-        if (loggedInUser == null) {
-            log.info("no user");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        // Spring Security에서 현재 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        MemberDto loggedInUser = null;
+        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
+            // OAuth2 로그인 사용자일 경우
+            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+            String email = oAuth2User.getAttribute("email");
+            Member user = memberService.findByEmail(email).orElse(null);
+
+            loggedInUser = new MemberDto(user);
+
+        } else {
+            // 일반 로그인 사용자일 경우
+            MemberDto memberDto = getSession(request);
+            loggedInUser = memberDto;
         }
 
         Map<String, String> data = bookmarkService.clickBookmark(loggedInUser.getId(), boardId);
@@ -51,9 +66,23 @@ public class BookmarkController {
     @DeleteMapping("/bookmark/{boardId}")
     public ResponseEntity<Void> deleteBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
-        //세션 정보 가져오기
-        MemberDto loggedInUser = getSession(request);
-        if (loggedInUser == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        // Spring Security에서 현재 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        MemberDto loggedInUser = null;
+        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
+            // OAuth2 로그인 사용자일 경우
+            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+            String email = oAuth2User.getAttribute("email");
+            Member user = memberService.findByEmail(email).orElse(null);
+
+            loggedInUser = new MemberDto(user);
+
+        } else {
+            // 일반 로그인 사용자일 경우
+            MemberDto memberDto = getSession(request);
+            loggedInUser = memberDto;
+        }
 
         bookmarkService.deleteBookmark(loggedInUser.getId(), boardId);
         return new ResponseEntity<>(HttpStatus.OK);

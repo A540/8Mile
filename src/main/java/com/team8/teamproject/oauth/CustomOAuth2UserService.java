@@ -7,7 +7,10 @@ import com.team8.teamproject.oauth.dto.SessionUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -23,6 +26,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Collections;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
@@ -46,9 +50,20 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Member user = saveOrUpdate(attributes);
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 //         세션에 사용자 정보 저장
+
         httpSession.setAttribute("user", new SessionUser(user));
+        log.info("===================================request={}", request.getSession());
+//        HttpSession session = request.getSession();
 
 
+//
+//        if (session != null) {
+//            log.info("--------------------세션 생성 성공 ------------------------");
+//            session.setAttribute("user", new SessionUser(user));
+//            log.info("=======================session = {}", session.getAttribute("user"));
+//        } else {
+//            log.info("--------------------세션 생성 오류 ------------------------");
+//        }
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
                 attributes.getAttributes(),
