@@ -13,8 +13,12 @@ import java.util.UUID;
 @Component
 public class FileStore {
 
-    @Value("${file.dir}") // application.properties에 사진 저장 경로 설정
+//    @Value("${file.dir}") // application.properties에 사진 저장 경로 설정
     private String fileDir;
+
+    public void setFileDir(String path){
+        this.fileDir = path;
+    }
 
     public String getFullPath(String filename) { //파일이름 받아서 fullpath를 반환
         if (!new File(fileDir).exists()) {

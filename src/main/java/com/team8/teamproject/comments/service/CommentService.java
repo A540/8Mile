@@ -14,6 +14,7 @@ import com.team8.teamproject.login.repository.MemberRepository;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.repository.PostRepository;
 import com.team8.teamproject.post.storage.StorageService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +47,11 @@ public class CommentService {
     }
 
     @Transactional
-    public Comments saveComment(long id, String content, MemberDto memberDto, MultipartFile file) throws IOException {
+    public Comments saveComment(long id, String content, MemberDto memberDto, MultipartFile file, HttpServletRequest request) throws IOException {
         Post basePost = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         Member member = memberRepository.findById(memberDto.getId()).orElseThrow();
         Comments comment;
+        fileStore.setFileDir(request.getServletContext().getRealPath("/"));
         UploadFile uploadFile = fileStore.storeFile(file);
         if(uploadFile == null){
             comment = new Comments(content, basePost, member);
