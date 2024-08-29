@@ -14,12 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.http.HttpRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -106,27 +105,48 @@ public class LoginController {
         }
     }
 
-    @GetMapping("/logout")
-    public String logoutUser(HttpServletRequest request, HttpServletResponse response) {
-        // Spring Security 로그아웃 처리
-        new SecurityContextLogoutHandler().logout(request, response, null);
+    @GetMapping("/auth/check-authentication")
+    @ResponseBody
+    public Map<String, Object> checkAuthentication(HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        HttpSession session = request.getSession(false); // false means do not create a new session if one does not exist
 
-        // 현재 세션을 가져옵니다.
-        HttpSession session = request.getSession(false); // false는 세션이 없으면 null 반환
+        boolean isAuthenticated = authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken);
 
-        if (session != null) {
-            // 세션 ID를 가져옵니다.
-            String sessionId = session.getId();
+        // 세션 ID 확인
+        String sessionId = (session != null) ? session.getId() : null;
 
-            // Redis에서 세션 데이터를 삭제합니다.
-            redisTemplate.delete("spring:session:sessions:" + sessionId);
-            redisTemplate.delete(sessionId);
+        // 응답에 인증 상태와 세션 ID 포함
+        Map<String, Object> response = new HashMap<>();
+        response.put("authenticated", isAuthenticated);
+        response.put("sessionId", sessionId);
 
-            // 세션 무효화
-            session.invalidate();
-        }
-
-        // 로그아웃 후 로그인 페이지로 리디렉션
-        return "redirect:/";
+        return response;
     }
+
+
+    @GetMapping("/logout")
+        public String logoutUser(HttpServletRequest request, HttpServletResponse response) {
+            // Spring Security 로그아웃 처리
+            new SecurityContextLogoutHandler().logout(request, response, null);
+
+            // 현재 세션을 가져옵니다.
+            HttpSession session = request.getSession(false); // false는 세션이 없으면 null 반환
+
+            if (session != null) {
+                // 세션 ID를 가져옵니다.
+                String sessionId = session.getId();
+
+                // Redis에서 세션 데이터를 삭제합니다.
+                redisTemplate.delete("spring:session:sessions:" + sessionId);
+
+                // 세션 무효화
+                session.invalidate();
+            }
+
+            // 로그아웃 후 로그인 페이지로 리디렉션
+            return "redirect:/login";
+        }
 }
