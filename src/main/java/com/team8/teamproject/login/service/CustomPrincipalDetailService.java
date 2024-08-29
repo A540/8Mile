@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PrincipalDetailService  implements UserDetailsService {
+public class CustomPrincipalDetailService  implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override //UserDetailsService를 받아 데이터베이스에 email이 존재하는지 확인하는 메소드.

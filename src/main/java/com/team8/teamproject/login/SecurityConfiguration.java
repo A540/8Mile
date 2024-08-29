@@ -1,7 +1,7 @@
 package com.team8.teamproject.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team8.teamproject.login.service.PrincipalDetailService;
+import com.team8.teamproject.login.service.CustomPrincipalDetailService;
 //import com.team8.teamproject.oauth.CustomAuthenticationSuccessHandler;
 import com.team8.teamproject.oauth.CustomOAuth2UserService;
 import com.team8.teamproject.oauth.dto.PrincipalDetails;
@@ -37,7 +37,7 @@ public class SecurityConfiguration {
 
     private static final String MY_KEY = "1234";
 
-     private final PrincipalDetailService principalDetailService;
+     private final CustomPrincipalDetailService customPrincipalDetailService;
 
      private final ObjectMapper objectMapper;
 
@@ -68,14 +68,14 @@ public class SecurityConfiguration {
                 .headers(headerConfig -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login") // 로그인 페이지를 설정
-                        .defaultSuccessUrl("/boards/session") // 로그인 성공 후 리다이렉트 URI
+                        .defaultSuccessUrl("/boards") // 로그인 성공 후 리다이렉트 URI
                         .failureUrl("/login") // 로그인 실패 시 리다이렉트 URI
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                 .userService(customOAuth2UserService))
 
                 )
                 .rememberMe(rememberMe -> rememberMe
-                        .userDetailsService(principalDetailService) // Remember-Me 설정
+                        .userDetailsService(customPrincipalDetailService) // Remember-Me 설정
                         .rememberMeParameter("remember-me")
                         .key(MY_KEY)
                         .tokenValiditySeconds(86400) // 24시간
@@ -92,7 +92,7 @@ public class SecurityConfiguration {
     public AuthenticationManager authenticationManager() {//- AuthenticationManager 등록 ->인증을 만들고 처리하는 인터페이스.
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();//DaoAuthenticationProvider 사용
         provider.setPasswordEncoder(passwordEncoder);//PasswordEncoder로는 bCryPasswordEncoder를 사용 암호화는 이친구로 설정.
-        provider.setUserDetailsService(principalDetailService); //유저 인증절차는 이친구에게 넘김.
+        provider.setUserDetailsService(customPrincipalDetailService); //유저 인증절차는 이친구에게 넘김.
         return new ProviderManager(provider); //인증은 provider에게 넘김.
     }
 

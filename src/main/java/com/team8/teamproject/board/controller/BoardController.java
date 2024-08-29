@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,13 +40,55 @@ public class BoardController {
     private final BoardService boardService;
     private final BookmarkService bookmarkService;
 
+//    @GetMapping
+//    public String getBoards(@RequestParam(value = "sort", required = false) String sort,
+//                            @AuthenticationPrincipal PrincipalDetails principalDetails,
+//                            Model model) {
+//
+//        // PrincipalDetails를 통해 현재 로그인된 사용자 정보를 가져옴
+//        MemberDto loggedInUser = principalDetails != null ? principalDetails.getMember() : null;
+//
+//        if (loggedInUser != null) {
+//            model.addAttribute("member", new MemberViewDto(loggedInUser));
+//        }
+//
+//        // 게시판 정보 가져오기
+//        List<Board> boards = (sort == null) ? boardService.findBoards() : boardService.findBoardsBySort(sort);
+//
+//        // 북마크 상태 저장 -> DTO 반환
+//        List<BoardsViewDto> boardsViewDtoList = boards.stream()
+//                .map(b -> {
+//                    BoardsViewDto dto = new BoardsViewDto(b);
+//                    dto.changeIsBookMarked(getBookMarkedBoardId(loggedInUser).contains(b.getId()));
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
+//
+//        model.addAttribute("boards", boardsViewDtoList);
+//        return "board/boards";
+//    }
+
+    //== 게시판 상세 ==//
     @GetMapping
     public String getBoards(@RequestParam(value = "sort", required = false) String sort,
-                            @AuthenticationPrincipal PrincipalDetails principalDetails,
-                            Model model) {
+                            Model model, HttpServletRequest request,
+                            @AuthenticationPrincipal UserDetails userDetails) {
 
-        // PrincipalDetails를 통해 현재 로그인된 사용자 정보를 가져옴
-        MemberDto loggedInUser = principalDetails != null ? principalDetails.getMember() : null;
+        // 세션 정보를 통해 로그인된 사용자 정보 가져오기
+        MemberDto loggedInUser = getSession(request);
+
+        // 만약 세션에서 사용자를 찾지 못하면 UserDetails에서 사용자 정보를 가져옵니다.
+        if (loggedInUser == null && userDetails != null) {
+            if (userDetails instanceof OAuth2User) {
+                OAuth2User oAuth2User = (OAuth2User) userDetails;
+                loggedInUser = convertOAuth2UserToMemberDto(oAuth2User); // OAuth2 로그인 사용자 처리
+            } else if (userDetails instanceof PrincipalDetails) {
+                PrincipalDetails principalDetails = (PrincipalDetails) userDetails;
+                loggedInUser = principalDetails.getMember(); // 일반 로그인 사용자 처리
+            }
+        }
+
+        List<Long> bookMarkedBoardId = getBookMarkedBoardId(loggedInUser);
 
         if (loggedInUser != null) {
             model.addAttribute("member", new MemberViewDto(loggedInUser));
@@ -56,7 +101,7 @@ public class BoardController {
         List<BoardsViewDto> boardsViewDtoList = boards.stream()
                 .map(b -> {
                     BoardsViewDto dto = new BoardsViewDto(b);
-                    dto.changeIsBookMarked(getBookMarkedBoardId(loggedInUser).contains(b.getId()));
+                    dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -65,35 +110,7 @@ public class BoardController {
         return "board/boards";
     }
 
-
-    //== 게시판 상세 ==//
-    @GetMapping("/{boardId}")
-    public String getBoard(@PathVariable(value = "boardId") Long boardId,
-                           @RequestParam(value = "keyword", required = false) String keyword, Model model,
-                           HttpSession session, Pageable pageable) {
-
-        //게시판 정보
-        Board board = boardService.findBoard(boardId);
-
-        // 세션에서 조회 여부 확인
-        String sessionKey = "viewedBoard_" + boardId;
-        if (session.getAttribute(sessionKey) == null) {
-            // 세션에 조회 기록이 없으면 조회수 증가
-            boardService.updateViewCount(board);
-            session.setAttribute(sessionKey, true);  // 세션에 조회 기록 추가
-        }
-
-        BoardViewDto boardViewDto = new BoardViewDto(board);
-
-        //게시글 정보 (keyword 검색)
-        Page<Post> postPage = boardService.findPostsByBoardId(boardId, keyword, pageable);
-        Page<PostPageDto> postPageDtos = postPage.map(PostPageDto::new);
-
-        model.addAttribute("board", boardViewDto);
-        model.addAttribute("postPage", postPageDtos);
-
-        return "board/board";
-    }
+    // 세션에서 사용자 정보를 가져오는 메서드
 
     //== 게시판 생성 ==//
     @GetMapping("/create")
@@ -167,5 +184,16 @@ public class BoardController {
         return (loggedInUser != null) ? bookmarkService.getBookMarkedBoardId(loggedInUser.getId()) : new ArrayList<>();
     }
 
+    private MemberDto convertOAuth2UserToMemberDto(OAuth2User oAuth2User) {
+        // OAuth2User에서 제공하는 기본 속성 추출
+        String userName = null;
+        String email = null;
+        Long id = null;
 
+        // OAuth2User에서 제공하는 provider별 속성 가져오기
+        String registrationId = oAuth2User.getAttribute("registration_id");  // provider 구분
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+
+        return new MemberDto(id, userName, email);
+    }
 }
