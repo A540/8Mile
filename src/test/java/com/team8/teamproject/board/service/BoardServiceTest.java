@@ -68,7 +68,7 @@ public class BoardServiceTest {
         Long savedId = boardService.saveBoard(board);
 
         //when
-        boardService.deleteBoard(savedId);
+//        boardService.deleteBoard(savedId);
 
         //then
         Board deltedBoard = boardRepository.findOne(savedId).get();

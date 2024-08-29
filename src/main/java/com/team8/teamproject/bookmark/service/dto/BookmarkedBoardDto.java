@@ -1,10 +1,10 @@
-package com.team8.teamproject.board.controller.dto;
+package com.team8.teamproject.bookmark.service.dto;
 
 import com.team8.teamproject.board.domain.Board;
 import lombok.Getter;
 
 @Getter
-public class BoardsViewDto {
+public class BookmarkedBoardDto {
 
     private Long id;
     private String name;
@@ -12,7 +12,7 @@ public class BoardsViewDto {
     private long viewCount;
     private boolean isBookMarked;
 
-    public BoardsViewDto(Board board) {
+    public BookmarkedBoardDto(Board board) {
         this.id = board.getId();
         this.name = board.getName();
         this.description = board.getDescription();
@@ -20,6 +20,7 @@ public class BoardsViewDto {
     }
 
     public void changeIsBookMarked(boolean bookmarked) {
-        isBookMarked = bookmarked;
+            isBookMarked = bookmarked;
     }
 }
+
