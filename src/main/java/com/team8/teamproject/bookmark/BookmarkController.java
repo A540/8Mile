@@ -32,15 +32,12 @@ public class BookmarkController {
     @PostMapping("/bookmark/{boardId}")
     public ResponseEntity<Map<String, String>> clickBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
-        //세션 정보 가져오기
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userDetails") == null) {    //TODO MemberDto로 받기
+        //세션 정보
+        MemberDto loggedInUser = getSession(request);
+        if (loggedInUser == null) {
             log.info("no user");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-//        Member loggedInUser = (Member) session.getAttribute("userDetails");
-            MemberDto loggedInUser = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
-
 
         Map<String, String> data = bookmarkService.clickBookmark(loggedInUser.getId(), boardId);
         return new ResponseEntity<>(data, HttpStatus.OK);
@@ -55,13 +52,8 @@ public class BookmarkController {
     public ResponseEntity<Void> deleteBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
         //세션 정보 가져오기
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userDetails") == null) {   //TODO MemberDto로 받기
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-//        Member loggedInUser = (Member) session.getAttribute("userDetails");
-            MemberDto loggedInUser = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
-
+        MemberDto loggedInUser = getSession(request);
+        if (loggedInUser == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         bookmarkService.deleteBookmark(loggedInUser.getId(), boardId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -83,5 +75,16 @@ public class BookmarkController {
 
 
         return "bookmark/bookmark";
+    }
+
+
+
+    //== 세션로그인 멤버 정보 ==//
+    private MemberDto getSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        return (MemberDto) session.getAttribute("userDetails");
     }
 }

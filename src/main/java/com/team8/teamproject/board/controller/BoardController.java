@@ -38,31 +38,25 @@ public class BoardController {
     @GetMapping
     public String getBoards(@RequestParam(value = "sort", required = false) String sort, Model model, HttpServletRequest request) {
 
-
         // 세션 정보 가져오기
-        HttpSession session = request.getSession(false);
-        List<Long> bookMarkedBoardId = new ArrayList<>();
-        if (session != null) {
-//            Member loggedInUser = (Member) session.getAttribute("loggedInUser");
-            MemberDto loggedInUser = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
-            if (loggedInUser != null) {
-                MemberViewDto memberViewDto = new MemberViewDto(loggedInUser);
-                model.addAttribute("member", memberViewDto);
-
-                bookMarkedBoardId = bookmarkService.getBookMarkedBoardId(loggedInUser.getId());
-            }
+        MemberDto loggedInUser = getSession(request);
+        List<Long> bookMarkedBoardId = getBookMarkedBoardId(loggedInUser);
+        if (loggedInUser != null) {
+            model.addAttribute("member", new MemberViewDto(loggedInUser));
         }
 
         //게시판 정보
         List<Board> boards = (sort == null) ? boardService.findBoards() : boardService.findBoardsBySort(sort);
 
         //북마크 상태 저장 -> DTO 반환
-        List<BoardsViewDto> boardsViewDtoList = new ArrayList<>();
-        for (Board b : boards) {
-            BoardsViewDto dto = new BoardsViewDto(b);
-            dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
-            boardsViewDtoList.add(dto);
-        }
+        List<BoardsViewDto> boardsViewDtoList = boards.stream()
+                .map(b -> {
+                    BoardsViewDto dto = new BoardsViewDto(b);
+                    dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
 
         model.addAttribute("boards", boardsViewDtoList);
         return "board/boards";
@@ -156,5 +150,18 @@ public class BoardController {
 
         return "redirect:/boards/create";
     }
+
+    //== 세션 로그인 멤버 정보 ==//
+    private MemberDto getSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return (session != null) ? (MemberDto) session.getAttribute("userDetails") : null;
+    }
+
+
+    //회원의 북마크된 게시판 아이디 리스트 ==//
+    private List<Long> getBookMarkedBoardId(MemberDto loggedInUser) {
+        return (loggedInUser != null) ? bookmarkService.getBookMarkedBoardId(loggedInUser.getId()) : new ArrayList<>();
+    }
+
 
 }
