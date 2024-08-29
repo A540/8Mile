@@ -49,7 +49,6 @@ public class Board {
     // 연관 관계 편의 메서드 TODO
     public void linkUser(Member member) {
         this.member = member;
-//        member.getBoards().add(this);
     }
 
     //생성 메서드
