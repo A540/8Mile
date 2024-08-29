@@ -7,11 +7,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardForm {
+public class BoardForm implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
     @NotBlank
     @Size(min = 1, max = 50)
     @Pattern(regexp =  "^[a-zA-Z0-9가-힣 ]*$", message = "게시판명에 공백, 특수문자는 사용불가합니다.")
