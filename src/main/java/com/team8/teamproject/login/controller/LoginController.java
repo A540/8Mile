@@ -90,7 +90,6 @@ public class LoginController {
             if (passwordEncoder.matches(password, member.getPassword())) {
                 // 로그인 성공 시 MemberDto 객체를 생성
                 MemberDto memberDto = new MemberDto(member);
-
                 // 세션에 MemberDto 객체를 저장
                 session.setAttribute("userDetails", memberDto);
 
@@ -128,25 +127,28 @@ public class LoginController {
 
 
     @GetMapping("/logout")
-        public String logoutUser(HttpServletRequest request, HttpServletResponse response) {
-            // Spring Security 로그아웃 처리
-            new SecurityContextLogoutHandler().logout(request, response, null);
-
-            // 현재 세션을 가져옵니다.
-            HttpSession session = request.getSession(false); // false는 세션이 없으면 null 반환
-
-            if (session != null) {
-                // 세션 ID를 가져옵니다.
-                String sessionId = session.getId();
-
-                // Redis에서 세션 데이터를 삭제합니다.
-                redisTemplate.delete("spring:session:sessions:" + sessionId);
-
-                // 세션 무효화
-                session.invalidate();
-            }
-
-            // 로그아웃 후 로그인 페이지로 리디렉션
-            return "redirect:/login";
+    public String logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        // Spring Security 로그아웃 처리
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
         }
+
+        // 현재 세션을 가져옵니다.
+        HttpSession session = request.getSession(false); // false는 세션이 없으면 null 반환
+
+        if (session != null) {
+            // 세션 ID를 가져옵니다.
+            String sessionId = session.getId();
+
+            // Redis에서 세션 데이터를 삭제합니다.
+            redisTemplate.delete("spring:session:sessions:" + sessionId);
+
+            // 세션 무효화
+            session.invalidate();
+        }
+
+        // 로그아웃 후 로그인 페이지로 리디렉션
+        return "redirect:/login";
+    }
 }

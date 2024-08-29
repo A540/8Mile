@@ -61,7 +61,5 @@ public class OAuthAttributes {
                 .build();
     }
 
-    @Bean
-    public RequestContextListener requestContextListener(){    return new RequestContextListener();}
 
 }

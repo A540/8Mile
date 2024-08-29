@@ -8,6 +8,7 @@ import com.team8.teamproject.bookmark.domain.Bookmark;
 import com.team8.teamproject.bookmark.service.BookmarkService;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
+import com.team8.teamproject.oauth.dto.PrincipalDetails;
 import com.team8.teamproject.post.domain.Post;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,31 +38,33 @@ public class BoardController {
     private final BookmarkService bookmarkService;
 
     @GetMapping
-    public String getBoards(@RequestParam(value = "sort", required = false) String sort, Model model, HttpServletRequest request) {
+    public String getBoards(@RequestParam(value = "sort", required = false) String sort,
+                            @AuthenticationPrincipal PrincipalDetails principalDetails,
+                            Model model) {
 
-        // 세션 정보 가져오기
-        MemberDto loggedInUser = getSession(request);
-        List<Long> bookMarkedBoardId = getBookMarkedBoardId(loggedInUser);
+        // PrincipalDetails를 통해 현재 로그인된 사용자 정보를 가져옴
+        MemberDto loggedInUser = principalDetails != null ? principalDetails.getMember() : null;
+
         if (loggedInUser != null) {
             model.addAttribute("member", new MemberViewDto(loggedInUser));
         }
 
-        //게시판 정보
+        // 게시판 정보 가져오기
         List<Board> boards = (sort == null) ? boardService.findBoards() : boardService.findBoardsBySort(sort);
 
-        //북마크 상태 저장 -> DTO 반환
+        // 북마크 상태 저장 -> DTO 반환
         List<BoardsViewDto> boardsViewDtoList = boards.stream()
                 .map(b -> {
                     BoardsViewDto dto = new BoardsViewDto(b);
-                    dto.changeIsBookMarked(bookMarkedBoardId.contains(b.getId()));
+                    dto.changeIsBookMarked(getBookMarkedBoardId(loggedInUser).contains(b.getId()));
                     return dto;
                 })
                 .collect(Collectors.toList());
 
-
         model.addAttribute("boards", boardsViewDtoList);
         return "board/boards";
     }
+
 
     //== 게시판 상세 ==//
     @GetMapping("/{boardId}")

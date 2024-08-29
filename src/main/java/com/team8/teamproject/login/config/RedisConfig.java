@@ -1,4 +1,4 @@
-package com.team8.teamproject.login.redis;
+package com.team8.teamproject.login.config;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
