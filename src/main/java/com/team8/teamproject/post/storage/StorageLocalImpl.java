@@ -32,7 +32,7 @@ public class StorageLocalImpl implements StorageService {
     private final FileRepository fileRepository;
 
     // Create
-    @Transactional(readOnly = true)
+    @Transactional
     public void createLocalPost(Long boardId, String title, String content, MultipartFile file, MemberDto member, HttpServletRequest request) throws IOException {
         Board board = boardRepository.findOne(boardId).orElseThrow(IllegalArgumentException::new);
 
@@ -41,18 +41,18 @@ public class StorageLocalImpl implements StorageService {
         String savePath = "C:\\upload\\files"; // 절대경로: c:\\upload\\files
         String savePath2 = request.getServletContext().getRealPath("/"); // 나의 상대경로: C:\\Users\\user\\AppData\\ ,,,
 
-        log.info(savePath);
+        log.info(savePath2);
         // 경로에 폴더가 없다면 생성
-        if (!new File(savePath).exists()) {
+        if (!new File(savePath2).exists()) {
             try{
-                new File(savePath).mkdirs();
+                new File(savePath2).mkdirs();
             }
             catch(Exception e){
                 e.getStackTrace();
             }
         }
 
-        String filePath = savePath + "\\" + filename;
+        String filePath = savePath2 + "\\" + filename;
 
         file.transferTo(new File(filePath));
 
