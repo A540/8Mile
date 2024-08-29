@@ -82,13 +82,15 @@ public class BoardService {
 
     //== 게시판 soft delete ==//
     @Transactional
-    public void deleteBoard(Long boardId, Long memberId) {
+    public void deleteBoard(Long boardId) {
         Board deleteBoard = boardRepository.findOne(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("이미 삭제된 게시판입니다."));
 
         //dirty check
         deleteBoard.deleteBoard();
-        bookmarkService.deleteBookmark(memberId, boardId);
+
+        //게시글 지워지면 북마크도 삭제
+        bookmarkService.deleteBookmarkByBoard(boardId);
     }
 
 }

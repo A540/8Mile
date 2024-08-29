@@ -3,6 +3,7 @@ package com.team8.teamproject.bookmark;
 import com.team8.teamproject.board.controller.dto.MemberViewDto;
 import com.team8.teamproject.bookmark.service.BookmarkService;
 import com.team8.teamproject.bookmark.service.dto.BookmarkedBoardDto;
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,12 +34,12 @@ public class BookmarkController {
 
         //세션 정보 가져오기
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {    //TODO MemberDto로 받기
+        if (session == null || session.getAttribute("userDetails") == null) {    //TODO MemberDto로 받기
             log.info("no user");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        Member loggedInUser = (Member) session.getAttribute("loggedInUser");
-//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
+//        Member loggedInUser = (Member) session.getAttribute("userDetails");
+            MemberDto loggedInUser = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
 
 
         Map<String, String> data = bookmarkService.clickBookmark(loggedInUser.getId(), boardId);
@@ -48,18 +49,18 @@ public class BookmarkController {
     /**
      * 북마크 삭제
      * 북마크 페이지에서는 삭제 알림을 띄어준 후 삭제를 진행
-     * 게시판 페이지에서의 북마크 클릭과 달리 동작
+     * 게시판 페이지에서의 북마크 클릭(토글)과 달리 동작
      */
     @DeleteMapping("/bookmark/{boardId}")
     public ResponseEntity<Void> deleteBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
         //세션 정보 가져오기
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {   //TODO MemberDto로 받기
+        if (session == null || session.getAttribute("userDetails") == null) {   //TODO MemberDto로 받기
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        Member loggedInUser = (Member) session.getAttribute("loggedInUser");
-//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
+//        Member loggedInUser = (Member) session.getAttribute("userDetails");
+            MemberDto loggedInUser = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
 
 
         bookmarkService.deleteBookmark(loggedInUser.getId(), boardId);
@@ -76,6 +77,8 @@ public class BookmarkController {
 
         //회원 정보 조회
         Member member = memberService.findById(memberId);
+
+
         model.addAttribute("member", new MemberViewDto(member));
 
 

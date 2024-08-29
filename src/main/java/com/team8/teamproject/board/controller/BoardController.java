@@ -43,8 +43,8 @@ public class BoardController {
         HttpSession session = request.getSession(false);
         List<Long> bookMarkedBoardId = new ArrayList<>();
         if (session != null) {
-            Member loggedInUser = (Member) session.getAttribute("loggedInUser");
-//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
+//            Member loggedInUser = (Member) session.getAttribute("loggedInUser");
+            MemberDto loggedInUser = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
             if (loggedInUser != null) {
                 MemberViewDto memberViewDto = new MemberViewDto(loggedInUser);
                 model.addAttribute("member", memberViewDto);
@@ -141,19 +141,8 @@ public class BoardController {
     }
 
     @DeleteMapping("/{boardId}/delete")
-    public String deleteBoard(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request, RedirectAttributes redirectAttributes) {
-
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
-            return "redirect:/login";
-        }
-
-        Member loggedInUser = (Member) session.getAttribute("loggedInUser");
-//            MemberDto dto = (MemberDto) session.getAttribute("userDetails");   //TODO MemberDto로 수정
-
-        boardService.deleteBoard(boardId, loggedInUser.getId());
-
+    public String deleteBoard(@PathVariable(value = "boardId") Long boardId) {
+        boardService.deleteBoard(boardId);
         return "board/boards";
     }
 

@@ -1,5 +1,6 @@
 package com.team8.teamproject.board.controller.dto;
 
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import lombok.Data;
 
@@ -11,6 +12,12 @@ public class MemberViewDto {
     private String email;
 
     public MemberViewDto(Member member) {
+        this.id = member.getId();
+        this.userName = member.getUserName();
+        this.email = member.getEmail();
+    }
+
+    public MemberViewDto(MemberDto member) {
         this.id = member.getId();
         this.userName = member.getUserName();
         this.email = member.getEmail();

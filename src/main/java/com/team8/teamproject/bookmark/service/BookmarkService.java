@@ -68,6 +68,11 @@ public class BookmarkService {
         bookmarkRepository.deleteBookmark(memberId, boardId);
     }
 
+    @Transactional
+    public void deleteBookmarkByBoard(Long boardId) {
+        bookmarkRepository.deleteBookmarkByBoardId(boardId);
+    }
+
 
     //== 북마크 VIEW에 맞는 DTO 리턴 ==//
     public List<BookmarkedBoardDto> findBoardsViewDto(Long memberId) {

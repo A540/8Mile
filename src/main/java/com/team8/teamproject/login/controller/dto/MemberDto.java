@@ -14,18 +14,23 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class MemberDto implements Serializable {
 
+    private Long id;
     private String userName;
     private String email;
 
     @JsonCreator
-    public MemberDto(@JsonProperty("userName") String userName,
+    public MemberDto(
+            @JsonProperty("userName") Long id,
+                @JsonProperty("userName") String userName,
                      @JsonProperty("email") String email) {
+        this.id = id;
         this.userName = userName;
         this.email = email;
     }
 
     // Member 객체를 MemberDto로 변환하는 생성자
     public MemberDto(Member member) {
+        this.id = member.getId();
         this.userName = member.getUserName();
         this.email = member.getEmail();
     }
