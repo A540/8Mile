@@ -8,6 +8,7 @@ import com.team8.teamproject.comments.mapper.CommentMapper;
 import com.team8.teamproject.comments.repository.CommentRepository;
 import com.team8.teamproject.file.FileStore;
 import com.team8.teamproject.file.UploadFile;
+import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.repository.MemberRepository;
 import com.team8.teamproject.post.domain.Post;
@@ -29,6 +30,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     private final CommentMapper commentMapper;
 
@@ -44,8 +46,9 @@ public class CommentService {
     }
 
     @Transactional
-    public Comments saveComment(long id, String content, Member member, MultipartFile file) throws IOException {
+    public Comments saveComment(long id, String content, MemberDto memberDto, MultipartFile file) throws IOException {
         Post basePost = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        Member member = memberRepository.findById(memberDto.getId()).orElseThrow();
         Comments comment;
         UploadFile uploadFile = fileStore.storeFile(file);
         if(uploadFile == null){
