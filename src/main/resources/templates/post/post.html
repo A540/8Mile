@@ -117,7 +117,7 @@
                 aria-label="edit-delete"
               >
                 <button
-                  th:if="${session.userDetails.userName != null and session.userDetails.userName == comment.member.userName}"
+                  th:if="${loggedInUser.userName != null and loggedInUser.userName == comment.member.userName}"
                   class="btn btn-outline-primary lh-1"
                   data-bs-toggle="modal"
                   data-bs-target="#editCommentModal"
@@ -126,8 +126,8 @@
                   <span class="material-symbols-outlined"> edit </span>
                 </button>
                 <button
-                  th:if="${session.userDetails.userName != null and session.userDetails.userName == comment.member.userName}"
-                  class="btn btn-outline-danger lh-1"
+                        th:if="${loggedInUser.userName != null and loggedInUser.userName == comment.member.userName}"
+                        class="btn btn-outline-danger lh-1"
                   data-bs-toggle="modal"
                   data-bs-target="#deleteCommentModal"
                   th:onclick="handleDeleteCommentButton(event, [[${comment.id}]]);"

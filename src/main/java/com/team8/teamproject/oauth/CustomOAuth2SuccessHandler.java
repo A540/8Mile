@@ -39,8 +39,11 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .orElseThrow(() -> new IllegalArgumentException("No user found with email: " + email));
 
         // 세션에 사용자 정보 저장
-        session.setAttribute("MemberDetail", new SessionUser(user));
-        log.info("SESSION ID : {}", session.getId());
+        if (user != null) {
+            session.setAttribute("MemberDetail", new SessionUser(user));
+            log.info("SESSION ID : {}", session.getId());
+        }
+
 
         // 리디렉션 URL 설정
         getRedirectStrategy().sendRedirect(request, response, "/boards");

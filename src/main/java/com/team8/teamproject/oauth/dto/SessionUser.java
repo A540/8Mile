@@ -2,6 +2,7 @@ package com.team8.teamproject.oauth.dto;
 
 import com.team8.teamproject.login.entity.Member;
 import lombok.Getter;
+import lombok.Setter;
 
 
 import java.io.Serializable;

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import com.team8.teamproject.post.service.PostService;
 import org.springframework.web.multipart.MultipartFile;
 import com.team8.teamproject.comments.dto.ReadCommentResponse;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
@@ -64,7 +65,7 @@ public class PostController {
 
     // Read, 게시글 상세 조회
     @GetMapping("/posts/{postId}")
-    public String readPost(@PathVariable("postId") Long postId, Model model) {
+    public String readPost(@PathVariable("postId") Long postId, Model model, HttpServletRequest request) {
         Post readPost = postService.readPost(postId);
         List<ReadCommentResponse> readComments = commentService.findCommentsByPostId(readPost.getId());
         Double ratingAVG = postService.getRatingAVG(postId);
@@ -72,11 +73,21 @@ public class PostController {
 
         String nlString = System.lineSeparator();
 
+
+        MemberDto loggedInUser = sessionHandler.getSession(request);
+
+        //구글 로그인 처리
+        if (loggedInUser == null) {
+            SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
+            loggedInUser = new MemberDto(sessionUser);
+        }
+
         model.addAttribute("post", readPost);
         model.addAttribute("comments", readComments);
         model.addAttribute("nlString", nlString);
         model.addAttribute("ratingAVG", ratingAVG);
         model.addAttribute("countRating", countRating);
+        model.addAttribute("loggedInUser", loggedInUser);
         return "post/post";
     }
 

@@ -25,4 +25,6 @@ public class SessionHandler {
         log.info("SESSION ID : {}", session1.getId());
         return (SessionUser) session1.getAttribute("MemberDetail");
     }
+
+
 }

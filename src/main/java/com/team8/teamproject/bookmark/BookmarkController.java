@@ -3,9 +3,11 @@ package com.team8.teamproject.bookmark;
 import com.team8.teamproject.board.controller.dto.MemberViewDto;
 import com.team8.teamproject.bookmark.service.BookmarkService;
 import com.team8.teamproject.bookmark.service.dto.BookmarkedBoardDto;
+import com.team8.teamproject.common.SessionHandler;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.service.MemberService;
+import com.team8.teamproject.oauth.dto.SessionUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
     private final MemberService memberService;
+    private final SessionHandler sessionHandler;
 
 
     //== 북마크 등록, 삭제 처리 ==//
@@ -36,25 +39,15 @@ public class BookmarkController {
     @PostMapping("/bookmark/{boardId}")
     public ResponseEntity<Map<String, String>> clickBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
-        // Spring Security에서 현재 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MemberDto loggedInUser = sessionHandler.getSession(request);
 
-        MemberDto loggedInUser = null;
-        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
-            // OAuth2 로그인 사용자일 경우
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            String email = oAuth2User.getAttribute("email");
-            Member user = memberService.findByEmail(email).orElse(null);
+    //구글 로그인 처리
+        if (loggedInUser == null) {
+        SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
+        loggedInUser = new MemberDto(sessionUser);
+    }
 
-            loggedInUser = new MemberDto(user);
-
-        } else {
-            // 일반 로그인 사용자일 경우
-            MemberDto memberDto = getSession(request);
-            loggedInUser = memberDto;
-        }
-
-        Map<String, String> data = bookmarkService.clickBookmark(loggedInUser.getId(), boardId);
+    Map<String, String> data = bookmarkService.clickBookmark(loggedInUser.getId(), boardId);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
@@ -66,23 +59,14 @@ public class BookmarkController {
     @DeleteMapping("/bookmark/{boardId}")
     public ResponseEntity<Void> deleteBookmark(@PathVariable(value = "boardId") Long boardId, HttpServletRequest request) {
 
-        // Spring Security에서 현재 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MemberDto loggedInUser = sessionHandler.getSession(request);
 
-        MemberDto loggedInUser = null;
-        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
-            // OAuth2 로그인 사용자일 경우
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            String email = oAuth2User.getAttribute("email");
-            Member user = memberService.findByEmail(email).orElse(null);
-
-            loggedInUser = new MemberDto(user);
-
-        } else {
-            // 일반 로그인 사용자일 경우
-            MemberDto memberDto = getSession(request);
-            loggedInUser = memberDto;
+        //구글 로그인 처리
+        if (loggedInUser == null) {
+            SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
+            loggedInUser = new MemberDto(sessionUser);
         }
+
 
         bookmarkService.deleteBookmark(loggedInUser.getId(), boardId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -106,14 +90,4 @@ public class BookmarkController {
         return "bookmark/bookmark";
     }
 
-
-
-    //== 세션로그인 멤버 정보 ==//
-    private MemberDto getSession(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return null;
-        }
-        return (MemberDto) session.getAttribute("userDetails");
-    }
 }
