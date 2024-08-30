@@ -109,6 +109,7 @@ public class LoginController {
         }
     }
 
+
     @GetMapping("/auth/check-authentication")
     @ResponseBody
     public Map<String, Object> checkAuthentication(HttpServletRequest request) {
