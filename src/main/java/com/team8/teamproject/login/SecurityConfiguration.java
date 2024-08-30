@@ -1,7 +1,9 @@
 package com.team8.teamproject.login;
 
 import com.team8.teamproject.oauth.CustomAuthenticationSuccessHandler;
+import com.team8.teamproject.oauth.CustomOAuth2SuccessHandler;
 import com.team8.teamproject.oauth.CustomOAuth2UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +11,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,20 +27,23 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 
 import javax.sql.DataSource;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
     private static final String MY_KEY = "1234";
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
+
+    public SecurityConfiguration(CustomOAuth2SuccessHandler customOAuth2SuccessHandler) {
+        this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
+    }
+
+    @Autowired
+    private DataSource dataSource;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,10 +53,24 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 생성 정책 설정
+                        .sessionFixation().migrateSession() // 세션 고정 보호를 유지하면서 세션 ID를 변경합니다.
+                )
                 .authorizeHttpRequests(authorize -> authorize
                                 .anyRequest().permitAll() // 공개 페이지와 리소스
 //                        .anyRequest().authenticated() // 나머지 페이지는 인증 필요
                 )
+
+                .oauth2Login(oauth2 -> oauth2
+
+                        .loginPage("/login") // 로그인 페이지를 설정
+                        .successHandler(customOAuth2SuccessHandler) // OAuth2 로그인 성공 핸들러 설정
+//                        .defaultSuccessUrl("/post") // 로그인 성공 후 리다이렉트 URI
+                        .failureUrl("/login") // 로그인 실패 시 리다이렉트 URI
+
+                )
+
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login.html")
                         .permitAll()
@@ -61,19 +83,7 @@ public class SecurityConfiguration {
                 )
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .headers(headerConfig -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login") // 로그인 페이지를 설정
-                        .defaultSuccessUrl("/boards") // 로그인 성공 후 리다이렉트 URI
-                        .failureUrl("/login") // 로그인 실패 시 리다이렉트 URI
 
-                )
-                .rememberMe(rememberMe -> rememberMe
-                        .rememberMeServices(rememberMeServices()) // Remember-Me 설정
-                        .rememberMeParameter("remember-me")
-                        .key(MY_KEY)
-                        .tokenValiditySeconds(86400) // 24시간
-                        .alwaysRemember(true)
-                )
                 .sessionManagement(sessionManagement -> sessionManagement
                         .maximumSessions(1) // 동시에 하나의 세션만 허용
                 );
@@ -111,4 +121,5 @@ public class SecurityConfiguration {
     public PersistentTokenBasedRememberMeServices rememberMeServices() {
         return new PersistentTokenBasedRememberMeServices(MY_KEY, userDetailsService(), persistentTokenRepository());
     }
+
 }

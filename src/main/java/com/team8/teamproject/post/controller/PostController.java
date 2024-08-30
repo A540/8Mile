@@ -2,9 +2,11 @@ package com.team8.teamproject.post.controller;
 
 import com.team8.teamproject.board.controller.dto.MemberViewDto;
 import com.team8.teamproject.comments.service.CommentService;
+import com.team8.teamproject.common.SessionHandler;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.service.MemberService;
+import com.team8.teamproject.oauth.dto.SessionUser;
 import com.team8.teamproject.post.domain.Post;
 import com.team8.teamproject.post.storage.StorageService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,12 +36,7 @@ public class PostController {
     private final StorageService storageService;
     private final CommentService commentService;
     private final MemberService memberService;
-//
-//    public PostController(PostService postService, StorageService storageService, CommentService commentService){
-//        this.postService = postService;
-//        this.storageService = storageService;
-//        this.commentService = commentService;
-//    }
+    private final SessionHandler sessionHandler;
 
     // Create, 파일 업로드
     @GetMapping("/posts/create")
@@ -53,29 +50,15 @@ public class PostController {
                              @RequestParam(value = "content") String content, @RequestParam(value = "file") MultipartFile files,
                              HttpSession session, HttpServletRequest request) throws IOException {
 
+        MemberDto loggedInUser = sessionHandler.getSession(request);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        MemberDto loginMember = null;
-        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
-            // OAuth2 로그인 사용자일 경우
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            String email = oAuth2User.getAttribute("email");
-            Member user = memberService.findByEmail(email).orElse(null);
-
-            loginMember = new MemberDto(user);
-
-        } else  {
-            // 일반 로그인 사용자일 경우
-            MemberDto memberDto = getSession(request);
-
-            loginMember = memberDto;
+        //구글 로그인 처리
+        if (loggedInUser == null) {
+            SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
+            loggedInUser = new MemberDto(sessionUser);
         }
 
-
-
-//        MemberDto loginMember = (MemberDto) session.getAttribute("userDetails");
-        storageService.createLocalPost(boardId, title, content, files, loginMember, request);
+        storageService.createLocalPost(boardId, title, content, files, loggedInUser, request);
         return "redirect:/boards/" + boardId;
     }
 
@@ -99,9 +82,17 @@ public class PostController {
 
     // 별점 기능 관련
     @PostMapping("/posts/{postId}")
-    public String createRating(@PathVariable("postId") Long postId, HttpSession session, @RequestParam(value = "rating") double rating){
-        MemberDto loginMember = (MemberDto) session.getAttribute("userDetails");
-        postService.createRating(postId, loginMember.getId(), rating);
+    public String createRating(@PathVariable("postId") Long postId, HttpServletRequest request, @RequestParam(value = "rating") double rating){
+//        MemberDto loginMember = (MemberDto) session.getAttribute("userDetails");
+
+        MemberDto loggedInUser = sessionHandler.getSession(request);
+
+        //구글 로그인 처리
+        if (loggedInUser == null) {
+            SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
+            loggedInUser = new MemberDto(sessionUser);
+        }
+        postService.createRating(postId, loggedInUser.getId(), rating);
         return "redirect:/posts/" + postId;
     }
 
@@ -131,13 +122,6 @@ public class PostController {
     public ResponseEntity<byte[]> getImage(@PathVariable Long fileId) throws IOException {
         byte[] image = storageService.getImage(fileId);
         return new ResponseEntity<>(image, HttpStatus.OK);
-    }
-
-
-    //== 세션 로그인 멤버 정보 ==//
-    private MemberDto getSession(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        return (session != null) ? (MemberDto) session.getAttribute("userDetails") : null;
     }
 
 }

@@ -6,6 +6,7 @@ import com.team8.teamproject.board.exception.BoardNameDuplicateException;
 import com.team8.teamproject.board.service.BoardService;
 import com.team8.teamproject.bookmark.domain.Bookmark;
 import com.team8.teamproject.bookmark.service.BookmarkService;
+import com.team8.teamproject.common.SessionHandler;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.repository.MemberRepository;
@@ -42,56 +43,21 @@ public class BoardController {
 
     private final BoardService boardService;
     private final BookmarkService bookmarkService;
-    private final MemberService memberService;
-    private final HttpSession session;
+    private final SessionHandler sessionHandler;
 
     @GetMapping
     public String getBoards(@RequestParam(value = "sort", required = false) String sort, Model model, HttpServletRequest request) {
 
-////        // Spring Security에서 현재 사용자 정보 가져오기
-////        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-////
-////        MemberDto loggedInUser = null;
-////        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
-////            // OAuth2 로그인 사용자일 경우
-////            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-////            String email = oAuth2User.getAttribute("email");
-////            Member user = memberService.findByEmail(email).orElse(null);
-////
-////            loggedInUser = new MemberDto(user);
-////
-////            if (user != null) {
-////                model.addAttribute("member", new MemberViewDto(loggedInUser));
-////            }
-//        } else  {
-//            // 일반 로그인 사용자일 경우
-//            MemberDto memberDto = getSession(request);
-//
-//            loggedInUser = memberDto;
-//
-//            if (memberDto != null) {
-//                model.addAttribute("member", new MemberViewDto(loggedInUser));
-//            }
+        MemberDto loggedInUser = sessionHandler.getSession(request);
 
-
-//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-        SessionUser sessionUser = (SessionUser)session.getAttribute("user");
-        MemberDto loggedInUser = getSession(request);
-        log.info("loggedInUser={}", loggedInUser);
-
+        //구글 로그인 처리
         if (loggedInUser == null) {
-
-//            SessionUser sessionUser = getGoogleLoggedInUser(request);
+            SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
             loggedInUser = new MemberDto(sessionUser);
         }
 
-
-
+        //회원별 북마크된 게시판 아이디 리스트
         List<Long> bookMarkedBoardId = getBookMarkedBoardId(loggedInUser);
-//        if (loggedInUser != null) {
-//            model.addAttribute("member", new MemberViewDto(loggedInUser));
-//        }
 
         //게시판 정보
         List<Board> boards = (sort == null) ? boardService.findBoards() : boardService.findBoardsBySort(sort);
@@ -106,6 +72,7 @@ public class BoardController {
                 .collect(Collectors.toList());
 
 
+        model.addAttribute("member", loggedInUser);
         model.addAttribute("boards", boardsViewDtoList);
         return "board/boards";
     }
@@ -199,48 +166,9 @@ public class BoardController {
         return "redirect:/boards/create";
     }
 
-    //== 세션 로그인 멤버 정보 ==//
-    private MemberDto getSession(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        return (session != null) ? (MemberDto) session.getAttribute("userDetails") : null;
-    }
-
 
     //회원의 북마크된 게시판 아이디 리스트 ==//
     private List<Long> getBookMarkedBoardId(MemberDto loggedInUser) {
         return (loggedInUser != null) ? bookmarkService.getBookMarkedBoardId(loggedInUser.getId()) : new ArrayList<>();
-    }
-
-
-//    private SessionUser getGoogleLoggedInUser(HttpServletRequest request) {
-//
-//        HttpSession session = request.getSession(false);
-//        return (session != null) ? (SessionUser) session.getAttribute("user") : null;
-////        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-////        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
-////            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-////
-////            // oAuth2User에서 이메일, 이름 등 필요한 사용자 정보를 가져옴
-////            String email = oAuth2User.getAttribute("email");
-////            String name = oAuth2User.getAttribute("name");
-////
-////            // MemberDto로 변환
-////            return new MemberDto(null, email, name, "ROLE_USER");
-////        }
-////        return null;
-//    }
-
-    private SessionUser getGoogleLoggedInUser(HttpServletRequest request) {
-        HttpSession session = request.getSession(false); // true로 설정해도 괜찮음
-        if (session == null) {
-            log.info("세션이 존재하지 않습니다.");
-            return null;
-        }
-
-        SessionUser sessionUser = (SessionUser) session.getAttribute("user");
-        if (sessionUser == null) {
-            log.info("세션에 사용자 정보가 없습니다.");
-        }
-        return sessionUser;
     }
 }

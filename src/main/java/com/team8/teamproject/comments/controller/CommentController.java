@@ -3,8 +3,11 @@ package com.team8.teamproject.comments.controller;
 import com.team8.teamproject.comments.domain.Comments;
 import com.team8.teamproject.comments.dto.AddCommentRequest;
 import com.team8.teamproject.comments.service.CommentService;
+import com.team8.teamproject.common.SessionHandler;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
+import com.team8.teamproject.oauth.dto.SessionUser;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -26,20 +29,27 @@ public class CommentController {
 
 
     private final CommentService commentService;
+    private final SessionHandler sessionHandler;
 
     // 댓글 생성
     @PostMapping("/comments")
     public String saveComments(@RequestParam("postId") Long id, @RequestParam("content") String content,
-                               @RequestParam(value = "file") MultipartFile file, HttpSession session) throws IOException {
+                               @RequestParam(value = "file") MultipartFile file, HttpSession session, HttpServletRequest request) throws IOException {
         //세션에 저장한 loggedInUser 값을 사용해 Member 객체 가져오기
-        MemberDto memberDto = (MemberDto) session.getAttribute("userDetails");
-        
+        MemberDto loggedInUser = sessionHandler.getSession(request);
+
+        //구글 로그인 처리
+        if (loggedInUser == null) {
+            SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
+            loggedInUser = new MemberDto(sessionUser);
+        }
+
         // 로그인을 하지 않았다면 로그인 페이지로 전환
-        if(memberDto == null){
+        if(loggedInUser == null){
             return "redirect:/login";
         }
 
-        Comments comment = commentService.saveComment(id, content, memberDto, file);
+        Comments comment = commentService.saveComment(id, content, loggedInUser, file);
 
         return "redirect:/posts/" + id;
     }
@@ -62,11 +72,26 @@ public class CommentController {
 
     @GetMapping("/comments/{commentId}/like")
     public String likeThisComment(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
-                                  @PathVariable("commentId") Long id, HttpSession session){
+                                  @PathVariable("commentId") Long id, HttpSession session, HttpServletRequest request){
+//        // 로그인을 하지 않았다면 로그인 페이지로 전환
+//        if(session.getAttribute("userDetails") == null){
+//            return "redirect:/login";
+//        }
+
+        //세션에 저장한 loggedInUser 값을 사용해 Member 객체 가져오기
+        MemberDto loggedInUser = sessionHandler.getSession(request);
+
+        //구글 로그인 처리
+        if (loggedInUser == null) {
+            SessionUser sessionUser = sessionHandler.getGoogleLoggedInUser(request);
+            loggedInUser = new MemberDto(sessionUser);
+        }
+
         // 로그인을 하지 않았다면 로그인 페이지로 전환
-        if(session.getAttribute("userDetails") == null){
+        if(loggedInUser == null){
             return "redirect:/login";
         }
+
 
         commentService.addLike(id);
         return "redirect:" + referrer;
