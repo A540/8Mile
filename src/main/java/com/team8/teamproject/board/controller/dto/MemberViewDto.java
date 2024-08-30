@@ -4,8 +4,10 @@ import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class MemberViewDto {
+public class MemberViewDto implements Serializable {
 
     private Long id;
     private String userName;

@@ -1,5 +1,7 @@
 package com.team8.teamproject.login.controller;
 
+import com.team8.teamproject.board.controller.dto.BoardForm;
+import com.team8.teamproject.board.controller.dto.MemberViewDto;
 import com.team8.teamproject.login.controller.dto.MemberDto;
 import com.team8.teamproject.login.entity.Member;
 import com.team8.teamproject.login.repository.MemberRepository;
@@ -15,6 +17,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.http.HttpRequest;
 import java.util.HashMap;
@@ -79,7 +82,7 @@ public class LoginController {
     @PostMapping("/login")
     public String loginUser(@RequestParam("email") String email,
                             @RequestParam("password") String password,
-                            HttpSession session, Model model) {
+                            HttpSession session, Model model, RedirectAttributes redirectAttributes) {
 
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
@@ -90,8 +93,10 @@ public class LoginController {
             if (passwordEncoder.matches(password, member.getPassword())) {
                 // 로그인 성공 시 MemberDto 객체를 생성
                 MemberDto memberDto = new MemberDto(member);
+                MemberViewDto memberViewDto = new MemberViewDto(memberDto);
                 // 세션에 MemberDto 객체를 저장
-                session.setAttribute("userDetails", memberDto);
+                session.setAttribute("member", memberViewDto);
+                redirectAttributes.addFlashAttribute("member",  memberViewDto);
 
                 return "redirect:/boards";
             } else {
