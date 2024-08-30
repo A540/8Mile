@@ -18,13 +18,25 @@ public class SessionHandler {
     }
 
 
+//    //== 구글 로그인 세션 정보 ==//
+//    public SessionUser getGoogleLoggedInUser(HttpServletRequest request) {
+//
+//        HttpSession session1 = request.getSession(false);
+//        log.info("SESSION ID : {}", session1.getId());
+//        return (SessionUser) session1.getAttribute("MemberDetail");
+//    }
+
     //== 구글 로그인 세션 정보 ==//
     public SessionUser getGoogleLoggedInUser(HttpServletRequest request) {
-
         HttpSession session1 = request.getSession(false);
+
+        if (session1 == null) {
+            log.warn("구글 로그인 세션이 존재하지 않습니다.");
+            return null;
+        }
+
         log.info("SESSION ID : {}", session1.getId());
         return (SessionUser) session1.getAttribute("MemberDetail");
     }
-
 
 }
