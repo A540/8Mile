@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Getter
@@ -14,15 +15,17 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class MemberDto implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L; // 직렬화 호환성 유지
+
     private Long id;
     private String userName;
     private String email;
 
-    @JsonCreator
-    public MemberDto(
-            @JsonProperty("userName") Long id,
-                @JsonProperty("userName") String userName,
-                     @JsonProperty("email") String email) {
+    // JSON 직렬화 및 역직렬화 시 사용될 기본 생성자 및 getter/setter 메소드가 있어야 함
+    public MemberDto(Long id,
+             String userName,
+             String email) {
         this.id = id;
         this.userName = userName;
         this.email = email;

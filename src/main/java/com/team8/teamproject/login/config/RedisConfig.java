@@ -1,4 +1,4 @@
-package com.team8.teamproject.login.redis;
+package com.team8.teamproject.login.config;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +34,6 @@ public class RedisConfig {
         redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(port);
         redisStandaloneConfiguration.setPassword(password);  // 비밀번호 설정
-
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 

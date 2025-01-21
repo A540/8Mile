@@ -1,14 +1,22 @@
 package com.team8.teamproject.login;
 
-import com.team8.teamproject.oauth.CustomAuthenticationSuccessHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team8.teamproject.login.service.CustomPrincipalDetailService;
+//import com.team8.teamproject.oauth.CustomAuthenticationSuccessHandler;
 import com.team8.teamproject.oauth.CustomOAuth2UserService;
+import com.team8.teamproject.oauth.dto.PrincipalDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,24 +31,21 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import javax.sql.DataSource;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfiguration {
 
     private static final String MY_KEY = "1234";
 
-    @Autowired
-    private DataSource dataSource;
+     private final CustomPrincipalDetailService customPrincipalDetailService;
 
-    @Autowired
-    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+     private final ObjectMapper objectMapper;
 
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+//    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final  CustomOAuth2UserService customOAuth2UserService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -65,50 +70,31 @@ public class SecurityConfiguration {
                         .loginPage("/login") // 로그인 페이지를 설정
                         .defaultSuccessUrl("/boards") // 로그인 성공 후 리다이렉트 URI
                         .failureUrl("/login") // 로그인 실패 시 리다이렉트 URI
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                .userService(customOAuth2UserService))
 
                 )
                 .rememberMe(rememberMe -> rememberMe
-                        .rememberMeServices(rememberMeServices()) // Remember-Me 설정
+                        .userDetailsService(customPrincipalDetailService) // Remember-Me 설정
                         .rememberMeParameter("remember-me")
                         .key(MY_KEY)
                         .tokenValiditySeconds(86400) // 24시간
                         .alwaysRemember(true)
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .maximumSessions(1) // 동시에 하나의 세션만 허용
+                        .maximumSessions(1)
                 );
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .build();
+    public AuthenticationManager authenticationManager() {//- AuthenticationManager 등록 ->인증을 만들고 처리하는 인터페이스.
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();//DaoAuthenticationProvider 사용
+        provider.setPasswordEncoder(passwordEncoder);//PasswordEncoder로는 bCryPasswordEncoder를 사용 암호화는 이친구로 설정.
+        provider.setUserDetailsService(customPrincipalDetailService); //유저 인증절차는 이친구에게 넘김.
+        return new ProviderManager(provider); //인증은 provider에게 넘김.
     }
 
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User.withUsername("user1")
-                .password("{noop}user1Pass")
-                .authorities("ROLE_USER")
-                .build();
-        UserDetails admin = User.withUsername("admin1")
-                .password("{noop}admin1Pass")
-                .authorities("ROLE_ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user, admin);
-    }
 
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-        tokenRepository.setDataSource(dataSource);
-        return tokenRepository;
-    }
-
-    @Bean
-    public PersistentTokenBasedRememberMeServices rememberMeServices() {
-        return new PersistentTokenBasedRememberMeServices(MY_KEY, userDetailsService(), persistentTokenRepository());
-    }
 }
